@@ -1,0 +1,28 @@
+{
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "jsx": false,
+      "dynamicImport": false,
+      "privateMethod": true,
+      "functionBind": false,
+      "exportDefaultFrom": false,
+      "exportNamespaceFrom": false,
+      "decorators": false,
+      "decoratorsBeforeExport": false,
+      "topLevelAwait": false,
+      "importMeta": false
+    },
+    "baseUrl": ".",
+    "target": "es2016",
+    "loose": false,
+    "externalHelpers": false,
+    "keepClassNames": true,
+    "preserveAllComments": true,
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "minify": false,
+  "sourceMaps": true
+}
