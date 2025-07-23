@@ -3,11 +3,6 @@
   "version": "0.0.0",
   "sideEffects": false,
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rarimo/unforgettable-sdk.git",
-    "directory": "packages/react"
-  },
   "homepage": "https://unforgettable.app",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",

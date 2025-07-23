@@ -1,4 +1,4 @@
-# Unforgettable.app SDK
+# Unforgettable SDK
 
 `UnforgettableSdk` is a secure client-side toolkit used for key exchange and recovery within the [Unforgettable.app](https://unforgettable.app) ecosystem. It allows you to generate protected recovery links and retrieve encrypted secrets using a private RSA key pair.
 
