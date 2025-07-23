@@ -1,29 +1,27 @@
 import { NotFoundError } from '@distributedlab/jac'
-import { UnforgettableMode, UnforgettableSdk } from '@rarimo/unforgettable-sdk'
+import { UnforgettableSdk, UnforgettableSdkOptions } from '@rarimo/unforgettable-sdk'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface UseUnforgettableLinkOptions {
-  mode: UnforgettableMode
+  sdkOptions: UnforgettableSdkOptions
   pollingInterval?: number
   onSuccess?: (privateKey: string) => void
   onError?: (error: Error) => void
 }
 
 export function useUnforgettableLink({
-  mode,
+  sdkOptions,
   pollingInterval = 5000,
   onSuccess,
   onError,
 }: UseUnforgettableLinkOptions) {
-  const sdk = useMemo(() => new UnforgettableSdk({ mode }), [mode])
+  const sdk = useMemo(() => new UnforgettableSdk(sdkOptions), [sdkOptions])
   const pollingIntervalRef = useRef<number>(-1)
   const [isFinished, setIsFinished] = useState(false)
-  const [unforgettableLink, setUnforgettableLink] = useState('')
 
   const processKeyRecovery = useCallback(async () => {
     try {
       const privateKey = await sdk.getRecoveredKey()
-      setUnforgettableLink(sdk.recoveryUrl)
       setIsFinished(true)
       window.clearInterval(pollingIntervalRef.current)
       onSuccess?.(privateKey)
@@ -47,5 +45,5 @@ export function useUnforgettableLink({
     return () => window.clearInterval(intervalId)
   }, [processKeyRecovery, isFinished, pollingInterval])
 
-  return unforgettableLink
+  return sdk.recoveryUrl
 }

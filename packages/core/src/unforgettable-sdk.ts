@@ -16,6 +16,12 @@ export interface DataTransferPayload {
   recovery_key: string
 }
 
+export interface UnforgettableSdkOptions {
+  mode: 'create' | 'restore'
+  appUrl?: string
+  apiUrl?: string
+}
+
 export class UnforgettableSdk {
   mode: UnforgettableMode
   appUrl: string
@@ -24,11 +30,12 @@ export class UnforgettableSdk {
   #encryptionKeyPair: pki.rsa.KeyPair
   #apiClient: JsonApiClient
 
-  constructor(opts: { mode: 'create' | 'restore'; appUrl?: string; apiUrl?: string }) {
-    this.mode = opts.mode
-    this.appUrl = opts.appUrl || UNFORGETTABLE_APP_URL
+  constructor(opts: UnforgettableSdkOptions) {
+    const { mode, appUrl, apiUrl } = opts
+    this.mode = mode
+    this.appUrl = appUrl || UNFORGETTABLE_APP_URL
     this.#apiClient = new JsonApiClient({
-      baseUrl: opts.apiUrl || UNFORGETTABLE_API_URL,
+      baseUrl: apiUrl || UNFORGETTABLE_API_URL,
     })
     this.#dataTransferId = uuid()
     this.#encryptionKeyPair = this.generateKeyPair()
