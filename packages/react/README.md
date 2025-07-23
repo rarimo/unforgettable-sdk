@@ -23,11 +23,17 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 
 ### Props
 
-- `unforgettableLinkOptions` — **required object** containing:
-  - `sdkOptions: UnforgettableSdkOptions`: options for customizing the SDK.
-  - `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
-  - `onSuccess?: (privateKey: string) => void` — callback when the private key is successfully recovered.
-  - `onError?: (error: Error) => void` — callback when an error occurs during polling.
+- `mode: 'create' | 'restore'` — required field for operation type.
+
+- `appUrl?: string` — optional App URL where you'll be redirected.
+
+- `apiUrl?: string` — optional API URL where you can set custom link.
+
+- `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
+
+- `onSuccess?: (privateKey: string) => void` — callback when the private key is successfully recovered.
+
+- `onError?: (error: Error) => void` — callback when an error occurs during polling.
 
 - `qrProps` — optional object with props passed to `QRCodeSVG` (e.g., `size`, `fgColor`, `bgColor`, `level`, etc.).
 
@@ -58,7 +64,7 @@ This React hook generates a secure recovery link and handles polling for the rec
 
 ### Parameters
 
-- `mode` — `'create' | 'restore'` — required mode of operation.
+- `mode` — `'create' | 'restore'` — required field for operation type.
 - `appUrl` —  optional App URL.
 - `apiUrl` —  optional API URL.
 - `pollingInterval?` — optional interval in milliseconds between polling attempts (default: `5000`).
