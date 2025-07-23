@@ -1,21 +1,25 @@
 import { NotFoundError } from '@distributedlab/jac'
-import { UnforgettableSdk, UnforgettableSdkOptions } from '@rarimo/unforgettable-sdk'
+import { UnforgettableSdk } from '@rarimo/unforgettable-sdk'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface UseUnforgettableLinkOptions {
-  sdkOptions: UnforgettableSdkOptions
+  mode: 'create' | 'restore'
+  appUrl?: string
+  apiUrl?: string
   pollingInterval?: number
   onSuccess?: (privateKey: string) => void
   onError?: (error: Error) => void
 }
 
 export function useUnforgettableLink({
-  sdkOptions,
+  mode,
+  appUrl,
+  apiUrl,
   pollingInterval = 5000,
   onSuccess,
   onError,
 }: UseUnforgettableLinkOptions) {
-  const sdk = useMemo(() => new UnforgettableSdk(sdkOptions), [sdkOptions])
+  const sdk = useMemo(() => new UnforgettableSdk({ mode, appUrl, apiUrl }), [mode, appUrl, apiUrl])
   const pollingIntervalRef = useRef<number>(-1)
   const [isFinished, setIsFinished] = useState(false)
 
