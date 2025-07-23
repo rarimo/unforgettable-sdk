@@ -24,7 +24,7 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 ### Props
 
 - `unforgettableLinkOptions` — **required object** containing:
-  - `mode`: `'create' | 'restore'` — operation mode.
+  - `sdkOptions: UnforgettableSdkOptions`: options for customizing the SDK.
   - `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
   - `onSuccess?: (privateKey: string) => void` — callback when the private key is successfully recovered.
   - `onError?: (error: Error) => void` — callback when an error occurs during polling.
