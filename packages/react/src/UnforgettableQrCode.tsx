@@ -4,17 +4,29 @@ import { ComponentProps, HTMLAttributes } from 'react'
 import { useUnforgettableLink, UseUnforgettableLinkOptions } from './useUnforgettableLink'
 
 export interface UnforgettableQrCodeProps
-  extends Omit<HTMLAttributes<HTMLAnchorElement>, 'onError'> {
+  extends UseUnforgettableLinkOptions,
+    Omit<HTMLAttributes<HTMLAnchorElement>, 'onError'> {
   qrProps?: Omit<ComponentProps<typeof QRCodeSVG>, 'value'>
-  unforgettableLinkOptions: UseUnforgettableLinkOptions
 }
 
 export default function UnforgettableQrCode({
   qrProps,
-  unforgettableLinkOptions,
+  mode,
+  apiUrl,
+  appUrl,
+  pollingInterval,
+  onSuccess,
+  onError,
   ...rest
 }: UnforgettableQrCodeProps) {
-  const unforgettableLink = useUnforgettableLink(unforgettableLinkOptions)
+  const unforgettableLink = useUnforgettableLink({
+    mode,
+    apiUrl,
+    appUrl,
+    pollingInterval,
+    onSuccess,
+    onError,
+  })
 
   return (
     <a href={unforgettableLink} target='_blank' rel='noopener noreferrer' {...rest}>

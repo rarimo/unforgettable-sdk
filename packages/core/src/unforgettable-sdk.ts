@@ -42,17 +42,8 @@ export class UnforgettableSdk {
   }
 
   get recoveryUrl() {
-    const url = new URL(
-      this.mode === 'restore' ? '/recovery/restore/form' : '/recovery/create/form',
-      this.appUrl,
-    )
-
-    url.searchParams.set('id', this.#dataTransferId)
-    url.searchParams.set(
-      'data-transfer-key',
-      pemToBase64Url(pki.publicKeyToPem(this.#encryptionKeyPair.publicKey)),
-    )
-
+    const url = new URL(this.mode === 'restore' ? '/r' : '/c', this.appUrl)
+    url.hash = `#${this.#dataTransferId}&${pemToBase64Url(pki.publicKeyToPem(this.#encryptionKeyPair.publicKey))}`
     return url.toString()
   }
 

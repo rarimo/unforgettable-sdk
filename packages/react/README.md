@@ -44,11 +44,9 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 
 ```tsx
 <UnforgettableQrCode
-  unforgettableLinkOptions={{
-    mode: 'create',
-    onSuccess: (key) => console.log('Recovered:', key),
-    onError: (err) => console.error('Error:', err),
-  }}
+  mode={'create'}
+  onSuccess={(key) => console.log('Recovered:', key)}
+  onError={(error) => console.error(error)}
   qrProps={{ size: 200 }}
   style={{ margin: '2rem auto', display: 'block' }}
 />
@@ -61,6 +59,8 @@ This React hook generates a secure recovery link and handles polling for the rec
 ### Parameters
 
 - `mode` — `'create' | 'restore'` — required mode of operation.
+- `appUrl` —  optional App URL.
+- `apiUrl` —  optional API URL.
 - `pollingInterval?` — optional interval in milliseconds between polling attempts (default: `5000`).
 - `onSuccess?` — callback function called with the recovered private key when successful.
 - `onError?` — callback function called with an error if polling fails or the transfer is invalid.
