@@ -1,25 +1,96 @@
 # Unforgettable.app SDK React
 
-QR code React component for ZK Passport. It allows you to easily integrate ZK Passport into your React applications and renders a QR code for identity verification through the RariMe app.
+React QR code component for [Unforgettable.app](https://github.com/rarimo/unforgettable-sdk). 
+This package makes it easy to integrate identity verification into your React apps via a scannable QR code, compatible with the Unforgettable.app.
 
 ## Features
 
-- Customizable QR code component for scanning with RariMe app
-- Easy integration with [ZK Passport core library](https://github.com/rarimo/zk-passport/tree/main/packages/core)
-- Supports both **basic** and **advanced** verification modes
-- Events for status changes and success/error handling
+- Simple QR code component for React
+- Works with [Unforgettable.app core SDK](https://github.com/rarimo/unforgettable-sdk/tree/main/packages/core)
+- Supports **create** and **restore** (basic & advanced verification modes)
+- Built-in polling with success/error callbacks
+- Fully customizable via props
 
 ## Installation
 
-To use the ZK Passport React component, you need to install the `@rarimo/unforgettable-sdk-react` package along with the `viem` library for onchain verification support.
-
 ```bash
-yarn add viem@^2.31.0 @rarimo/unforgettable-sdk-react
+yarn add @rarimo/unforgettable-sdk-react
 ```
 
-## Usage
+## Component: UnforgettableQrCode
 
-TODO: Write
+This component renders a QR code inside an `<a>` tag that links to the identity creation or recovery page on Unforgettable.app.
+
+### Props
+
+- `unforgettableLinkOptions` — **required object** containing:
+  - `mode`: `'create' | 'restore'` — operation mode.
+  - `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
+  - `onSuccess?: (privateKey: string) => void` — callback when the private key is successfully recovered.
+  - `onError?: (error: Error) => void` — callback when an error occurs during polling.
+
+- `qrProps` — optional object with props passed to `QRCodeSVG` (e.g., `size`, `fgColor`, `bgColor`, `level`, etc.).
+
+- `...rest` — any valid HTML attributes applied to the `<a>` element (e.g., `className`, `style`, `target`, etc.).
+
+### What it does
+
+- Generates a recovery link using `UnforgettableSdk`.
+- Displays a QR code containing the link.
+- Starts polling for the recovery key.
+- Triggers `onSuccess` or `onError` callbacks when appropriate.
+
+### Example usage
+
+```tsx
+<UnforgettableQrCode
+  unforgettableLinkOptions={{
+    mode: 'create',
+    onSuccess: (key) => console.log('Recovered:', key),
+    onError: (err) => console.error('Error:', err),
+  }}
+  qrProps={{ size: 200 }}
+  style={{ margin: '2rem auto', display: 'block' }}
+/>
+```
+
+## Hook: useUnforgettableLink
+
+This React hook generates a secure recovery link and handles polling for the recovered private key from the Unforgettable backend.
+
+### Parameters
+
+- `mode` — `'create' | 'restore'` — required mode of operation.
+- `pollingInterval?` — optional interval in milliseconds between polling attempts (default: `5000`).
+- `onSuccess?` — callback function called with the recovered private key when successful.
+- `onError?` — callback function called with an error if polling fails or the transfer is invalid.
+
+### Returns
+
+- A `string` containing the recovery link that can be passed to a QR code component or opened in a browser.
+
+### What it does
+
+- Instantiates the `UnforgettableSdk` with the provided mode.
+- Generates a secure link containing the public key.
+- Starts polling the backend to retrieve the encrypted recovery key.
+- On success, decrypts the key and returns it via `onSuccess`.
+- On failure, stops polling and triggers `onError`.
+
+### Example usage
+
+```tsx
+const recoveryLink = useUnforgettableLink({
+  mode: 'restore',
+  pollingInterval: 3000,
+  onSuccess: (privateKey) => {
+    console.log('Recovered key:', privateKey)
+  },
+  onError: (err) => {
+    console.error('Polling error:', err)
+  },
+})
+```
 
 ## License
 

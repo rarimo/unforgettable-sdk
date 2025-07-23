@@ -1,46 +1,29 @@
 import { NotFoundError } from '@distributedlab/jac'
-import {
-  DataTransferPayload,
-  generateKeyPair,
-  generateRecoveryLink,
-  getDataTransfer,
-  RecoveryType,
-} from '@rarimo/unforgettable-sdk'
+import { UnforgettableMode, UnforgettableSdk } from '@rarimo/unforgettable-sdk'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { v4 as uuid } from 'uuid'
 
 export interface UseUnforgettableLinkOptions {
-  recoveryType: RecoveryType
+  mode: UnforgettableMode
   pollingInterval?: number
   onSuccess?: (privateKey: string) => void
   onError?: (error: Error) => void
 }
 
 export function useUnforgettableLink({
-  recoveryType,
+  mode,
   pollingInterval = 5000,
   onSuccess,
   onError,
 }: UseUnforgettableLinkOptions) {
-  const [isFinished, setIsFinished] = useState(false)
+  const sdk = useMemo(() => new UnforgettableSdk({ mode }), [mode])
   const pollingIntervalRef = useRef<number>(-1)
-
-  const dataTransferId = useMemo(() => uuid(), [])
-  const encryptionKeyPair = useMemo(() => generateKeyPair(), [])
-
-  const unforgettableLink = useMemo(
-    () => generateRecoveryLink(dataTransferId, encryptionKeyPair.publicKey, recoveryType),
-    [dataTransferId, encryptionKeyPair, recoveryType],
-  )
+  const [isFinished, setIsFinished] = useState(false)
+  const [unforgettableLink, setUnforgettableLink] = useState('')
 
   const processKeyRecovery = useCallback(async () => {
     try {
-      const { data } = await getDataTransfer(dataTransferId)
-      if (!data) return
-
-      const { recovery_key: encryptedRecoveryKey } = JSON.parse(data.data) as DataTransferPayload
-      const privateKey = encryptionKeyPair.privateKey.decrypt(encryptedRecoveryKey)
-
+      const privateKey = await sdk.getRecoveredKey()
+      setUnforgettableLink(sdk.recoveryUrl)
       setIsFinished(true)
       window.clearInterval(pollingIntervalRef.current)
       onSuccess?.(privateKey)
@@ -52,7 +35,7 @@ export function useUnforgettableLink({
       window.clearInterval(pollingIntervalRef.current)
       onError?.(error as Error)
     }
-  }, [dataTransferId, encryptionKeyPair, onSuccess, onError])
+  }, [onSuccess, onError])
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -64,8 +47,5 @@ export function useUnforgettableLink({
     return () => window.clearInterval(intervalId)
   }, [processKeyRecovery, isFinished, pollingInterval])
 
-  return {
-    unforgettableLink,
-    isFinished,
-  }
+  return unforgettableLink
 }

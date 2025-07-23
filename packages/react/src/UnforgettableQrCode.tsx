@@ -1,32 +1,20 @@
-import { RecoveryType } from '@rarimo/unforgettable-sdk'
 import { QRCodeSVG } from 'qrcode.react'
 import { ComponentProps, HTMLAttributes } from 'react'
 
-import { useUnforgettableLink } from './useUnforgettableLink'
+import { useUnforgettableLink, UseUnforgettableLinkOptions } from './useUnforgettableLink'
 
 export interface UnforgettableQrCodeProps
   extends Omit<HTMLAttributes<HTMLAnchorElement>, 'onError'> {
-  recoveryType: RecoveryType
-  pollingInterval?: number
   qrProps?: Omit<ComponentProps<typeof QRCodeSVG>, 'value'>
-  onSuccess?: (privateKey: string) => void
-  onError?: (error: Error) => void
+  unforgettableLinkOptions: UseUnforgettableLinkOptions
 }
 
 export default function UnforgettableQrCode({
-  recoveryType,
-  pollingInterval = 5000,
   qrProps,
-  onSuccess,
-  onError,
+  unforgettableLinkOptions,
   ...rest
 }: UnforgettableQrCodeProps) {
-  const { unforgettableLink } = useUnforgettableLink({
-    recoveryType,
-    pollingInterval,
-    onSuccess,
-    onError,
-  })
+  const unforgettableLink = useUnforgettableLink(unforgettableLinkOptions)
 
   return (
     <a href={unforgettableLink} target='_blank' rel='noopener noreferrer' {...rest}>

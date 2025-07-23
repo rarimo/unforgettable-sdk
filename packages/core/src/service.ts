@@ -1,32 +1,53 @@
+import { errors } from '@distributedlab/jac'
 import { pki } from 'node-forge'
+import { v4 as uuid } from 'uuid'
 
 import { UNFORGETTABLE_APP_URL } from './constants'
+import { DataTransferPayload, getDataTransfer } from './data-transfers-api'
 import { pemToBase64Url } from './utils'
 
-export enum RecoveryType {
-  Create = 'create',
-  Restore = 'restore',
-}
+export type UnforgettableMode = 'create' | 'restore'
 
-export const generateKeyPair = (bits = 2048, workers = -1) =>
-  pki.rsa.generateKeyPair({
-    bits,
-    workers,
-  })
+export class UnforgettableSdk {
+  mode: UnforgettableMode
+  appUrl: string
 
-export const generateRecoveryLink = (
-  dataTransferId: string,
-  publicKey: pki.rsa.PublicKey,
-  recoveryType: RecoveryType,
-  urlBaseLink = UNFORGETTABLE_APP_URL,
-) => {
-  const url = new URL(
-    recoveryType === RecoveryType.Restore ? '/recovery/restore/form' : '/recovery/create/form',
-    urlBaseLink,
-  )
+  #dataTransferId: string
+  #encryptionKeyPair: pki.rsa.KeyPair
 
-  url.searchParams.set('id', dataTransferId)
-  url.searchParams.set('data-transfer-key', pemToBase64Url(pki.publicKeyToPem(publicKey)))
+  constructor(opts: { mode: 'create' | 'restore'; appUrl?: string }) {
+    this.mode = opts.mode
+    this.appUrl = opts.appUrl || UNFORGETTABLE_APP_URL
+    this.#dataTransferId = uuid()
+    this.#encryptionKeyPair = this.generateKeyPair()
+  }
 
-  return url.toString()
+  get recoveryUrl() {
+    const url = new URL(
+      this.mode === 'restore' ? '/recovery/restore/form' : '/recovery/create/form',
+      this.appUrl,
+    )
+
+    url.searchParams.set('id', this.#dataTransferId)
+    url.searchParams.set(
+      'data-transfer-key',
+      pemToBase64Url(pki.publicKeyToPem(this.#encryptionKeyPair.publicKey)),
+    )
+
+    return url.toString()
+  }
+
+  generateKeyPair = (bits = 2048, workers = -1) =>
+    pki.rsa.generateKeyPair({
+      bits,
+      workers,
+    })
+
+  async getRecoveredKey(): Promise<string> {
+    const { data } = await getDataTransfer(this.#dataTransferId)
+    if (!data) throw errors.NotFoundError
+
+    const { recovery_key: encryptedRecoveryKey } = JSON.parse(data.data) as DataTransferPayload
+    return this.#encryptionKeyPair.privateKey.decrypt(encryptedRecoveryKey)
+  }
 }
