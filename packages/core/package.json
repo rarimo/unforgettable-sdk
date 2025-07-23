@@ -17,7 +17,7 @@
     "build": "yarn clean && yarn build:types && yarn build:cjs && yarn build:esm && node ./postbuild.js",
     "build:cjs": "npx swc src -d ./dist/cjs --config-file ./.swcrc -C module.type=commonjs",
     "build:esm": "npx swc src -d ./dist/esm --config-file ./.swcrc -C module.type=es6 isModule=true",
-    "build:types": "tsc -p tsconfig.build.json --outDir ./dist/types --declaration --emitDeclarationOnly",
+    "build:types": "tsc --outDir ./dist/types --declaration --emitDeclarationOnly",
     "clean": "rm -rf dist"
   },
   "dependencies": {
