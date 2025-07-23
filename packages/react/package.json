@@ -1,0 +1,42 @@
+{
+  "name": "@rarimo/unforgettable-sdk-react",
+  "version": "0.0.0",
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rarimo/unforgettable-sdk.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://unforgettable.app",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "browser": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "scripts": {
+    "build": "yarn clean && yarn build:types && yarn build:cjs && yarn build:esm && node ./postbuild.js",
+    "build:cjs": "npx swc src -d ./dist/cjs --config-file ./.swcrc -C module.type=commonjs",
+    "build:esm": "npx swc src -d ./dist/esm --config-file ./.swcrc -C module.type=es6 isModule=true",
+    "build:types": "tsc --outDir ./dist/types --declaration --emitDeclarationOnly",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@rarimo/unforgettable-sdk": "workspace:*",
+    "qrcode.react": "^4.2.0"
+  },
+  "devDependencies": {
+    "@distributedlab/jac": "1.0.0-rc.17",
+    "@types/node": "^18.14.2",
+    "@types/react": "^19.0.0",
+    "react": "^19.1.0",
+    "tsc-alias": "^1.8.2"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "viem": "^2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "yarn@4.9.2"
+}

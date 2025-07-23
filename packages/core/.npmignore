@@ -1,0 +1,4 @@
+tsconfig.json
+tsconfig.build.json
+postbuild.js
+.swcrc
