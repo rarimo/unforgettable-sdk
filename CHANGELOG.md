@@ -6,8 +6,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [0.1.0] - 2025-07-23
 ### Added
-- `core` package for Unforgettable.app SDK
-- `react` package for Unforgettable.app SDK QR code component
+- `core` package for Unforgettable SDK
+- `react` package for Unforgettable SDK QR code component
 
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.0.0/

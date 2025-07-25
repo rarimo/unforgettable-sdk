@@ -1,12 +1,12 @@
 # Unforgettable SDK React
 
-React QR code component for [Unforgettable.app](https://github.com/rarimo/unforgettable-sdk). 
+React QR code component for [Unforgettable SDK](https://github.com/rarimo/unforgettable-sdk). 
 This package makes it easy to integrate identity verification into your React apps via a scannable QR code, compatible with the Unforgettable.app.
 
 ## Features
 
 - Simple QR code component for React
-- Works with [Unforgettable.app core SDK](https://github.com/rarimo/unforgettable-sdk/tree/main/packages/core)
+- Works with [Unforgettable SDK core library](https://github.com/rarimo/unforgettable-sdk/tree/main/packages/core)
 - Supports **create** and **restore** (basic & advanced verification modes)
 - Built-in polling with success/error callbacks
 - Fully customizable via props
