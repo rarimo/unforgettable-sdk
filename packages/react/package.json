@@ -27,8 +27,7 @@
     "tsc-alias": "^1.8.2"
   },
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
-    "viem": "^2"
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "publishConfig": {
     "access": "public"
