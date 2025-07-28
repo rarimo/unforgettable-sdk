@@ -1,11 +1,10 @@
+import { UnforgettableMode } from '@rarimo/unforgettable-sdk'
 import UnforgettableQrCode from '@rarimo/unforgettable-sdk-react'
 import { useCallback, useState } from 'react'
 
-type Mode = 'create' | 'restore'
-
 export default function App() {
   const [masterSeed, setMasterSeed] = useState('')
-  const [mode, setMode] = useState<Mode>('create')
+  const [mode, setMode] = useState<UnforgettableMode>('create')
 
   const handleUnforgettableSuccess = useCallback((masterSeed: string) => {
     setMasterSeed(masterSeed)
@@ -24,7 +23,7 @@ export default function App() {
           {['create', 'restore'].map(item => (
             <button
               key={item}
-              onClick={() => setMode(item as Mode)}
+              onClick={() => setMode(item as UnforgettableMode)}
               className={`px-4 py-2 font-medium text-sm rounded-md transition-colors duration-200 ${
                 mode === item
                   ? 'bg-white border border-gray-300 text-blue-600'

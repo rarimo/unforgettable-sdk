@@ -1856,6 +1856,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "basic-recovery-react@workspace:examples/basic-recovery-react"
   dependencies:
+    "@rarimo/unforgettable-sdk": "workspace:*"
     "@rarimo/unforgettable-sdk-react": "workspace:*"
     "@tailwindcss/vite": "npm:^4.0.17"
     "@types/react": "npm:^19"

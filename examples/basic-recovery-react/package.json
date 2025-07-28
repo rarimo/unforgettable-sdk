@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@rarimo/unforgettable-sdk": "workspace:*",
     "@rarimo/unforgettable-sdk-react": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
