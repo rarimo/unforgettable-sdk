@@ -34,11 +34,12 @@ export default function UnforgettableQrCode({
     return (
       loader ?? (
         <QRCodeSVG
-          value=' '
+          value='Loading...'
           {...qrProps}
           style={{
-            opacity: 0.2,
             ...qrProps?.style,
+            opacity: 0.3,
+            filter: 'blur(4px)',
           }}
         />
       )
