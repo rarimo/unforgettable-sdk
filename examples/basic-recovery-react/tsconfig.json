@@ -12,8 +12,8 @@
     "preserveConstEnums": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

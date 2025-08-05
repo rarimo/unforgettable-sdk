@@ -21,7 +21,7 @@ import { UnforgettableSdk } from '@rarimo/unforgettable-sdk'
 const sdk = new UnforgettableSdk({ mode: 'create' })
 
 // Generate a secure recovery URL to share
-const recoveryUrl = sdk.recoveryUrl
+const recoveryUrl = await sdk.getRecoveryUrl()
 console.log('Recovery URL:', recoveryUrl)
 
 // Later: recover the secret key

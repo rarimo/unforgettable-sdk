@@ -19,6 +19,7 @@ export function useUnforgettableLink({
   const sdk = useMemo(() => new UnforgettableSdk({ mode, appUrl, apiUrl }), [mode, appUrl, apiUrl])
   const pollingIntervalRef = useRef<number>(-1)
   const [isFinished, setIsFinished] = useState(false)
+  const [recoveryUrl, setRecoveryUrl] = useState<string | null>(null)
 
   const processKeyRecovery = useCallback(async () => {
     try {
@@ -46,5 +47,23 @@ export function useUnforgettableLink({
     return () => window.clearInterval(intervalId)
   }, [processKeyRecovery, isFinished, pollingInterval])
 
-  return sdk.recoveryUrl
+  useEffect(() => {
+    let isInitialized = true
+    const loadRecoveryUrl = async () => {
+      try {
+        const url = await sdk.getRecoveryUrl()
+        if (isInitialized) setRecoveryUrl(url)
+      } catch (error) {
+        onError?.(error as Error)
+      }
+    }
+
+    loadRecoveryUrl()
+
+    return () => {
+      isInitialized = false
+    }
+  }, [])
+
+  return recoveryUrl
 }

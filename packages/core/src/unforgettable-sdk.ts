@@ -27,7 +27,7 @@ export class UnforgettableSdk {
   appUrl: string
 
   #dataTransferId: string
-  #encryptionKeyPair: pki.rsa.KeyPair
+  #encryptionKeyPairPromise: Promise<pki.rsa.KeyPair>
   #apiClient: JsonApiClient
 
   constructor(opts: UnforgettableSdkOptions) {
@@ -38,20 +38,24 @@ export class UnforgettableSdk {
       baseUrl: apiUrl || UNFORGETTABLE_API_URL,
     })
     this.#dataTransferId = uuid()
-    this.#encryptionKeyPair = this.generateKeyPair()
+    this.#encryptionKeyPairPromise = this.generateKeyPair()
   }
 
-  get recoveryUrl() {
+  async getRecoveryUrl() {
     const url = new URL(this.mode === 'restore' ? '/r' : '/c', this.appUrl)
-    url.hash = `#${this.#dataTransferId}&${pemToBase64Url(pki.publicKeyToPem(this.#encryptionKeyPair.publicKey))}`
+    const keypair = await this.#encryptionKeyPairPromise
+    url.hash = `#${this.#dataTransferId}&${pemToBase64Url(pki.publicKeyToPem(keypair.publicKey))}`
     return url.toString()
   }
 
-  generateKeyPair = (bits = 2048, workers = -1) =>
-    pki.rsa.generateKeyPair({
-      bits,
-      workers,
+  private generateKeyPair = (bits = 2048) => {
+    return new Promise<pki.rsa.KeyPair>((resolve, reject) => {
+      pki.rsa.generateKeyPair({ bits }, (err, keypair) => {
+        if (err) return reject(err)
+        resolve(keypair)
+      })
     })
+  }
 
   async getRecoveredKey(): Promise<string> {
     const { data } = await this.#apiClient.get<DataTransfer>(
@@ -59,7 +63,9 @@ export class UnforgettableSdk {
     )
     if (!data) throw errors.NotFoundError
 
+    const keypair = await this.#encryptionKeyPairPromise
+
     const { recovery_key: encryptedRecoveryKey } = JSON.parse(data.data) as DataTransferPayload
-    return this.#encryptionKeyPair.privateKey.decrypt(encryptedRecoveryKey)
+    return keypair.privateKey.decrypt(encryptedRecoveryKey)
   }
 }
