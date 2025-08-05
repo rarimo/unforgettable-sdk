@@ -1,6 +1,6 @@
 # Unforgettable SDK React
 
-React QR code component for [Unforgettable SDK](https://github.com/rarimo/unforgettable-sdk). 
+React QR code component for [Unforgettable SDK](https://github.com/rarimo/unforgettable-sdk).
 This package makes it easy to integrate identity verification into your React apps via a scannable QR code, compatible with the Unforgettable.app.
 
 ## Features
@@ -39,6 +39,8 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 
 - `...rest` — any valid HTML attributes applied to the `<a>` element (e.g., `className`, `style`, `target`, etc.).
 
+- `loader?` — element to render inside the loader container (e.g., a spinner or text) while the QR code link is being generated.
+
 ### What it does
 
 - Generates a recovery link using `UnforgettableSdk`.
@@ -51,10 +53,11 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 ```tsx
 <UnforgettableQrCode
   mode={'create'}
-  onSuccess={(key) => console.log('Recovered:', key)}
-  onError={(error) => console.error(error)}
+  onSuccess={key => console.log('Recovered:', key)}
+  onError={error => console.error(error)}
   qrProps={{ size: 200 }}
   style={{ margin: '2rem auto', display: 'block' }}
+  loader={<span>Loading...</span>}
 />
 ```
 
@@ -65,8 +68,8 @@ This React hook generates a secure recovery link and handles polling for the rec
 ### Parameters
 
 - `mode` — `'create' | 'restore'` — required field for operation type.
-- `appUrl` —  optional App URL.
-- `apiUrl` —  optional API URL.
+- `appUrl` — optional App URL.
+- `apiUrl` — optional API URL.
 - `pollingInterval?` — optional interval in milliseconds between polling attempts (default: `5000`).
 - `onSuccess?` — callback function called with the recovered private key when successful.
 - `onError?` — callback function called with an error if polling fails or the transfer is invalid.
@@ -89,10 +92,10 @@ This React hook generates a secure recovery link and handles polling for the rec
 const recoveryLink = useUnforgettableLink({
   mode: 'restore',
   pollingInterval: 3000,
-  onSuccess: (privateKey) => {
+  onSuccess: privateKey => {
     console.log('Recovered key:', privateKey)
   },
-  onError: (err) => {
+  onError: err => {
     console.error('Polling error:', err)
   },
 })
