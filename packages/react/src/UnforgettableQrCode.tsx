@@ -8,7 +8,6 @@ export interface UnforgettableQrCodeProps
     Omit<HTMLAttributes<HTMLAnchorElement>, 'onError'> {
   qrProps?: Omit<ComponentProps<typeof QRCodeSVG>, 'value'>
   loader?: ReactNode
-  loaderContainerProps?: HTMLAttributes<HTMLDivElement>
 }
 
 export default function UnforgettableQrCode({
@@ -20,7 +19,6 @@ export default function UnforgettableQrCode({
   onSuccess,
   onError,
   loader,
-  loaderContainerProps,
   ...rest
 }: UnforgettableQrCodeProps) {
   const unforgettableLink = useUnforgettableLink({
@@ -33,22 +31,17 @@ export default function UnforgettableQrCode({
   })
 
   if (!unforgettableLink) {
-    const { style: styles, ...rest } = loaderContainerProps || {}
-
     return (
-      <div
-        {...rest}
-        style={{
-          width: qrProps?.width ?? 200,
-          height: qrProps?.height ?? 200,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          ...styles,
-        }}
-      >
-        {loader}
-      </div>
+      loader ?? (
+        <QRCodeSVG
+          value=' '
+          {...qrProps}
+          style={{
+            opacity: 0.2,
+            ...qrProps?.style,
+          }}
+        />
+      )
     )
   }
 

@@ -48,21 +48,16 @@ export function useUnforgettableLink({
   }, [processKeyRecovery, isFinished, pollingInterval])
 
   useEffect(() => {
-    let isInitialized = true
     const loadRecoveryUrl = async () => {
       try {
         const url = await sdk.getRecoveryUrl()
-        if (isInitialized) setRecoveryUrl(url)
+        setRecoveryUrl(url)
       } catch (error) {
         onError?.(error as Error)
       }
     }
 
     loadRecoveryUrl()
-
-    return () => {
-      isInitialized = false
-    }
   }, [])
 
   return recoveryUrl

@@ -41,8 +41,6 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 
 - `loader?` — element to render inside the loader container (e.g., a spinner or text) while the QR code link is being generated.
 
-- `loaderContainerProps?` — HTML attributes applied to the loader container (for example, style, className, etc.) where the loader is displayed.
-
 ### What it does
 
 - Generates a recovery link using `UnforgettableSdk`.
@@ -60,14 +58,6 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
   qrProps={{ size: 200 }}
   style={{ margin: '2rem auto', display: 'block' }}
   loader={<span>Loading...</span>}
-  loaderContainerProps={{
-    style: {
-      width: 250,
-      height: 250,
-      backgroundColor: '#fafafa',
-      border: '2px dashed #ccc',
-    },
-  }}
 />
 ```
 
