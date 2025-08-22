@@ -76,9 +76,7 @@ export class UnforgettableSdk {
 
     return {
       recoveryKey: keypair.privateKey.decrypt(encryptedRecoveryKey),
-      helperData: helper_data
-        ? helper_data.map(item => keypair.privateKey.decrypt(item))
-        : undefined,
+      helperData: helper_data,
     }
   }
 
