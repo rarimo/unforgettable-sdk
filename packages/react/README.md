@@ -31,7 +31,7 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 
 - `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
 
-- `onSuccess?: (privateKey: string) => void` — callback when the private key is successfully recovered.
+- `onSuccess?: (privateKey: string, helperData?: string[]) => void` — callback when the private key is successfully recovered.
 
 - `onError?: (error: Error) => void` — callback when an error occurs during polling.
 

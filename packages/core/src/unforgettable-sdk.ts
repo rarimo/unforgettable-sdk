@@ -14,12 +14,18 @@ export interface DataTransfer {
 
 export interface DataTransferPayload {
   recovery_key: string
+  helper_data?: string[]
 }
 
 export interface UnforgettableSdkOptions {
   mode: 'create' | 'restore'
   appUrl?: string
   apiUrl?: string
+}
+
+export interface RecoveredData {
+  recoveryKey: string
+  helperData?: string[]
 }
 
 export class UnforgettableSdk {
@@ -57,15 +63,27 @@ export class UnforgettableSdk {
     })
   }
 
-  async getRecoveredKey(): Promise<string> {
+  async getRecoveredData(): Promise<RecoveredData> {
     const { data } = await this.#apiClient.get<DataTransfer>(
       `/integrations/helper-keeper/v1/public/data-transfers/${this.#dataTransferId}`,
     )
     if (!data) throw errors.NotFoundError
 
     const keypair = await this.#encryptionKeyPairPromise
+    const { recovery_key: encryptedRecoveryKey, helper_data } = JSON.parse(
+      data.data,
+    ) as DataTransferPayload
 
-    const { recovery_key: encryptedRecoveryKey } = JSON.parse(data.data) as DataTransferPayload
-    return keypair.privateKey.decrypt(encryptedRecoveryKey)
+    return {
+      recoveryKey: keypair.privateKey.decrypt(encryptedRecoveryKey),
+      helperData: helper_data
+        ? helper_data.map(item => keypair.privateKey.decrypt(item))
+        : undefined,
+    }
+  }
+
+  async getRecoveredKey(): Promise<string> {
+    const recoveredData = await this.getRecoveredData()
+    return recoveredData.recoveryKey
   }
 }
