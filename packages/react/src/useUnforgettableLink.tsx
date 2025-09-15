@@ -25,7 +25,7 @@ export function useUnforgettableLink({
   const sdk = useMemo(() => {
     return new UnforgettableSdk({ mode, appUrl, apiUrl, factors, walletAddress })
     // Factors is an array, so we need to convert it to a string to avoid unnecessary re-creations
-  }, [mode, appUrl, apiUrl, JSON.stringify(factors), walletAddress])
+  }, [mode, appUrl, apiUrl, walletAddress, factors?.toString()])
 
   const processKeyRecovery = useCallback(async () => {
     try {
