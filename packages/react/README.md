@@ -24,22 +24,16 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 ### Props
 
 - `mode: 'create' | 'restore'` — required field for operation type.
-
 - `appUrl?: string` — optional App URL where you'll be redirected.
-
 - `apiUrl?: string` — optional API URL where you can set custom link.
-
+- `factors?: RecoveryFactor[]` — optional custom recovery factors.
+- `walletAddress?: string` — wallet address to recover, required for `restore` mode.
 - `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
-
-- `onSuccess?: (privateKey: string, helperData?: string[]) => void` — callback when the private key is successfully recovered.
-
+- `onSuccess?: (privateKey: string, helperDataUrl?: string) => void` — callback when the private key is successfully restored.
 - `onError?: (error: Error) => void` — callback when an error occurs during polling.
-
 - `qrProps` — optional object with props passed to `QRCodeSVG` (e.g., `size`, `fgColor`, `bgColor`, `level`, etc.).
-
-- `...rest` — any valid HTML attributes applied to the `<a>` element (e.g., `className`, `style`, `target`, etc.).
-
 - `loader?` — element to render inside the loader container (e.g., a spinner or text) while the QR code link is being generated.
+- `...rest` — any valid HTML attributes applied to the `<a>` element (e.g., `className`, `style`, `target`, etc.).
 
 ### What it does
 
@@ -70,6 +64,8 @@ This React hook generates a secure recovery link and handles polling for the rec
 - `mode` — `'create' | 'restore'` — required field for operation type.
 - `appUrl` — optional App URL.
 - `apiUrl` — optional API URL.
+- `factors?: RecoveryFactor[]` — optional custom recovery factors.
+- `walletAddress?: string` — wallet address to recover, required for `restore` mode.
 - `pollingInterval?` — optional interval in milliseconds between polling attempts (default: `5000`).
 - `onSuccess?` — callback function called with the recovered private key when successful.
 - `onError?` — callback function called with an error if polling fails or the transfer is invalid.
