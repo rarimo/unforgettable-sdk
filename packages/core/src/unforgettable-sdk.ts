@@ -2,7 +2,8 @@ import { errors, JsonApiClient } from '@distributedlab/jac'
 import { pki } from 'node-forge'
 import { v4 as uuid } from 'uuid'
 
-import { UNFORGETTABLE_API_URL, UNFORGETTABLE_APP_URL } from './constants'
+import { RecoveryFactor, UNFORGETTABLE_API_URL, UNFORGETTABLE_APP_URL } from './constants'
+import { composeUnforgettableLocationHash } from './location-hash'
 import { pemToBase64Url } from './utils'
 
 export type UnforgettableMode = 'create' | 'restore'
@@ -14,43 +15,56 @@ export interface DataTransfer {
 
 export interface DataTransferPayload {
   recovery_key: string
-  helper_data?: string[]
+  helper_data_url?: string
 }
 
 export interface UnforgettableSdkOptions {
   mode: 'create' | 'restore'
   appUrl?: string
   apiUrl?: string
+  factors?: RecoveryFactor[]
+  walletAddress?: string
 }
 
 export interface RecoveredData {
   recoveryKey: string
-  helperData?: string[]
+  helperDataUrl?: string
 }
 
 export class UnforgettableSdk {
   mode: UnforgettableMode
   appUrl: string
+  factors: RecoveryFactor[]
+  walletAddress?: string
 
   #dataTransferId: string
   #encryptionKeyPairPromise: Promise<pki.rsa.KeyPair>
   #apiClient: JsonApiClient
 
   constructor(opts: UnforgettableSdkOptions) {
-    const { mode, appUrl, apiUrl } = opts
-    this.mode = mode
-    this.appUrl = appUrl || UNFORGETTABLE_APP_URL
+    this.mode = opts.mode
+    this.appUrl = opts.appUrl || UNFORGETTABLE_APP_URL
+    this.factors = opts.factors || []
+    this.walletAddress = opts.walletAddress
+
     this.#apiClient = new JsonApiClient({
-      baseUrl: apiUrl || UNFORGETTABLE_API_URL,
+      baseUrl: opts.apiUrl || UNFORGETTABLE_API_URL,
     })
     this.#dataTransferId = uuid()
     this.#encryptionKeyPairPromise = this.generateKeyPair()
   }
 
   async getRecoveryUrl() {
-    const url = new URL(this.mode === 'restore' ? '/r' : '/c', this.appUrl)
     const keypair = await this.#encryptionKeyPairPromise
-    url.hash = `#${this.#dataTransferId}&${pemToBase64Url(pki.publicKeyToPem(keypair.publicKey))}`
+
+    const url = new URL(this.mode === 'restore' ? '/r' : '/c', this.appUrl)
+    url.hash = composeUnforgettableLocationHash({
+      dataTransferId: this.#dataTransferId,
+      encryptionPublicKey: pemToBase64Url(pki.publicKeyToPem(keypair.publicKey)),
+      factors: this.factors,
+      walletAddress: this.walletAddress,
+    })
+
     return url.toString()
   }
 
@@ -70,13 +84,13 @@ export class UnforgettableSdk {
     if (!data) throw errors.NotFoundError
 
     const keypair = await this.#encryptionKeyPairPromise
-    const { recovery_key: encryptedRecoveryKey, helper_data } = JSON.parse(
+    const { recovery_key: encryptedRecoveryKey, helper_data_url } = JSON.parse(
       data.data,
     ) as DataTransferPayload
 
     return {
       recoveryKey: keypair.privateKey.decrypt(encryptedRecoveryKey),
-      helperData: helper_data,
+      helperDataUrl: helper_data_url,
     }
   }
 

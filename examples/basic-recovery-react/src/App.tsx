@@ -1,17 +1,26 @@
-import { UnforgettableMode } from '@rarimo/unforgettable-sdk'
+import { RecoveryFactor, UnforgettableMode } from '@rarimo/unforgettable-sdk'
 import UnforgettableQrCode from '@rarimo/unforgettable-sdk-react'
 import { useCallback, useState } from 'react'
+import { Hex } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
 
 export default function App() {
-  const [masterSeed, setMasterSeed] = useState('')
+  const [privateKey, setPrivateKey] = useState('')
+  const [walletAddress, setWalletAddress] = useState('')
+
+  const [helperDataUrl, setHelperDataUrl] = useState<string>('')
   const [mode, setMode] = useState<UnforgettableMode>('create')
 
-  const handleUnforgettableSuccess = useCallback((masterSeed: string) => {
-    setMasterSeed(masterSeed)
+  const handleUnforgettableSuccess = useCallback((key: string, helperDataUrl?: string) => {
+    setPrivateKey(key)
+    setHelperDataUrl(helperDataUrl ?? '')
+    setWalletAddress(privateKeyToAccount(key as Hex).address)
   }, [])
 
   const handleReset = () => {
-    setMasterSeed('')
+    setPrivateKey('')
+    setHelperDataUrl('')
+    setWalletAddress('')
   }
 
   return (
@@ -37,18 +46,45 @@ export default function App() {
 
         <div className='flex flex-col md:flex-row items-center md:items-start gap-10'>
           <div className='flex-1 space-y-4'>
+            {mode === 'restore' && (
+              <input
+                type='text'
+                value={walletAddress}
+                onChange={e => setWalletAddress(e.target.value)}
+                placeholder='Enter wallet address'
+                className='border border-gray-300 rounded-md p-2 w-full'
+              />
+            )}
+
             <div className='text-sm text-gray-700'>
               <p>
-                <span className='font-semibold'>Master seed:</span>{' '}
-                <span className='break-all'>{masterSeed || '—'}</span>
+                <span className='font-semibold'>Private key:</span>{' '}
+                <span className='break-all'>{privateKey || '—'}</span>
+              </p>
+              <p>
+                <span className='font-semibold'>Wallet address:</span>{' '}
+                <span className='break-all'>{walletAddress || '—'}</span>
               </p>
               <p>
                 <span className='font-semibold'>Mode:</span>{' '}
                 <code className='text-blue-600'>{mode}</code>
               </p>
+              {helperDataUrl && (
+                <p>
+                  <span className='font-semibold'>Helper Data URL:</span>{' '}
+                  <a
+                    href={helperDataUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='break-all'
+                  >
+                    {helperDataUrl}
+                  </a>
+                </p>
+              )}
             </div>
 
-            {masterSeed && (
+            {privateKey && (
               <button
                 onClick={handleReset}
                 className='mt-4 px-4 py-2 bg-red-100 text-red-600 rounded-md text-sm font-medium hover:bg-red-200 transition-colors'
@@ -58,10 +94,12 @@ export default function App() {
             )}
           </div>
 
-          {!masterSeed && (
+          {!privateKey && (
             <UnforgettableQrCode
               qrProps={{ size: 200 }}
               mode={mode}
+              factors={[RecoveryFactor.Face, RecoveryFactor.Object, RecoveryFactor.Password]}
+              walletAddress={mode === 'restore' ? walletAddress : undefined}
               onSuccess={handleUnforgettableSuccess}
               onError={error => console.error(error)}
             />

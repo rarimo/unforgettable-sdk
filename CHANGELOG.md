@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
+### Added
+- `core` - Add `factors` and `walletAddress` SDK options.
+- `core` - Add location hash compose/parse utils.
+- `core` - Add recovery factor constants.
+- `react` - Add support for the new SDK options.
+- `examples/basic-recovery-react` - Display wallet address and helper data URL.
+
+### Changed
+- `core` - Return helper data URL instead of raw helpers in `onSuccess` callback.
 
 ## [0.3.1] - 2025-08-22
 ### Fixed

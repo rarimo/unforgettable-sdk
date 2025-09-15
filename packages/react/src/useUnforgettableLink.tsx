@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface UseUnforgettableLinkOptions extends UnforgettableSdkOptions {
   pollingInterval?: number
-  onSuccess?: (privateKey: string, helperData?: string[]) => void
+  onSuccess?: (privateKey: string, helperDataUrl?: string) => void
   onError?: (error: Error) => void
 }
 
@@ -12,21 +12,27 @@ export function useUnforgettableLink({
   mode,
   appUrl,
   apiUrl,
+  factors,
+  walletAddress,
   pollingInterval = 5000,
   onSuccess,
   onError,
 }: UseUnforgettableLinkOptions) {
-  const sdk = useMemo(() => new UnforgettableSdk({ mode, appUrl, apiUrl }), [mode, appUrl, apiUrl])
   const pollingIntervalRef = useRef<number>(-1)
   const [isFinished, setIsFinished] = useState(false)
   const [recoveryUrl, setRecoveryUrl] = useState<string | null>(null)
 
+  const sdk = useMemo(() => {
+    return new UnforgettableSdk({ mode, appUrl, apiUrl, factors, walletAddress })
+    // Factors is an array, so we need to convert it to a string to avoid unnecessary re-creations
+  }, [mode, appUrl, apiUrl, JSON.stringify(factors), walletAddress])
+
   const processKeyRecovery = useCallback(async () => {
     try {
-      const { recoveryKey, helperData } = await sdk.getRecoveredData()
+      const { recoveryKey, helperDataUrl } = await sdk.getRecoveredData()
       setIsFinished(true)
       window.clearInterval(pollingIntervalRef.current)
-      onSuccess?.(recoveryKey, helperData)
+      onSuccess?.(recoveryKey, helperDataUrl)
     } catch (error) {
       if (error instanceof NotFoundError) {
         return // Data transfer is not yet available
@@ -58,7 +64,11 @@ export function useUnforgettableLink({
     }
 
     loadRecoveryUrl()
-  }, [])
+
+    return () => {
+      setRecoveryUrl(null)
+    }
+  }, [sdk])
 
   return recoveryUrl
 }
