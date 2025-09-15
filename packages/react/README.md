@@ -29,7 +29,7 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 - `factors?: RecoveryFactor[]` — optional custom recovery factors.
 - `walletAddress?: string` — wallet address to recover, required for `restore` mode.
 - `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
-- `onSuccess?: (privateKey: string, helperDataUrl?: string) => void` — callback when the private key is successfully recovered.
+- `onSuccess?: (privateKey: string, helperDataUrl?: string) => void` — callback when the private key is successfully restored.
 - `onError?: (error: Error) => void` — callback when an error occurs during polling.
 - `qrProps` — optional object with props passed to `QRCodeSVG` (e.g., `size`, `fgColor`, `bgColor`, `level`, etc.).
 - `loader?` — element to render inside the loader container (e.g., a spinner or text) while the QR code link is being generated.
