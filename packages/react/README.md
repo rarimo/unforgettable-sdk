@@ -7,7 +7,7 @@ This package makes it easy to integrate identity verification into your React ap
 
 - Simple QR code component for React
 - Works with [Unforgettable SDK core library](https://github.com/rarimo/unforgettable-sdk/tree/main/packages/core)
-- Supports **create** and **restore** (basic & advanced verification modes)
+- Supports **create** and **restore** modes
 - Built-in polling with success/error callbacks
 - Fully customizable via props
 
@@ -45,13 +45,17 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 ### Example usage
 
 ```tsx
+import UnforgettableQrCode from '@rarimo/unforgettable-sdk-react'
+
+// ...
+
 <UnforgettableQrCode
-  mode={'create'}
+  mode='create'
+  qrProps={{ size: 200 }}
+  loader={<span>Loading...</span>}
+  style={{ margin: '2rem auto', display: 'block' }}
   onSuccess={key => console.log('Recovered:', key)}
   onError={error => console.error(error)}
-  qrProps={{ size: 200 }}
-  style={{ margin: '2rem auto', display: 'block' }}
-  loader={<span>Loading...</span>}
 />
 ```
 

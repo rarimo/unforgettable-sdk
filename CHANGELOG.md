@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
+### Changed
+- `core` - Update example usage in README.md
 
 ## [0.5.0] - 2025-09-23
 ### Changed
