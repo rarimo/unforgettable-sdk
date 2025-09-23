@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
+### Changed
+- Use exact package versions in `package.json`
+- `core` - Move data transfer key pair logic to utils
+- `core` - Update default app and API URLs from dev to production environments
 
 ## [0.4.0] - 2025-09-15
 ### Added
