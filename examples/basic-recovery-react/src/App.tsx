@@ -98,7 +98,9 @@ export default function App() {
             <UnforgettableQrCode
               qrProps={{ size: 200 }}
               mode={mode}
-              factors={[RecoveryFactor.Face, RecoveryFactor.Object, RecoveryFactor.Password]}
+              appUrl='http://localhost:3000'
+              apiUrl='https://api.dev.unforgettable.app'
+              factors={[RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password]}
               walletAddress={mode === 'restore' ? walletAddress : undefined}
               onSuccess={handleUnforgettableSuccess}
               onError={error => console.error(error)}

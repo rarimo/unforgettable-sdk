@@ -16,15 +16,15 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@rarimo/unforgettable-sdk": "workspace:*",
-    "qrcode.react": "^4.2.0"
+    "@rarimo/unforgettable-sdk": "file:../core",
+    "qrcode.react": "4.2.0"
   },
   "devDependencies": {
     "@distributedlab/jac": "1.0.0-rc.17",
-    "@types/node": "^18.14.2",
-    "@types/react": "^19.0.0",
-    "react": "^19.1.0",
-    "tsc-alias": "^1.8.2"
+    "@types/node": "18.14.2",
+    "@types/react": "19.0.0",
+    "react": "19.1.0",
+    "tsc-alias": "1.8.2"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
