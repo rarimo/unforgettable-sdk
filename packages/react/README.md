@@ -1,7 +1,6 @@
-# Unforgettable SDK React
+# Unforgettable React SDK 
 
-React QR code component for [Unforgettable SDK](https://github.com/rarimo/unforgettable-sdk).
-This package makes it easy to integrate identity verification into your React apps via a scannable QR code, compatible with the Unforgettable.app.
+React QR code component for the [Unforgettable SDK](https://github.com/rarimo/unforgettable-sdk). Add identity verification to your React app with a scannable QR code that works with [Unforgettable.app](https://unforgettable.app).
 
 ## Features
 
@@ -19,7 +18,14 @@ yarn add @rarimo/unforgettable-sdk-react
 
 ## Component: UnforgettableQrCode
 
-This component renders a QR code inside an `<a>` tag that links to the identity creation or recovery page on Unforgettable.app.
+This component renders a QR code wrapped in an `<a>` tag that links to the identity creation or recovery page on Unforgettable.app.
+
+### What it does
+
+- Generates a recovery link using `UnforgettableSdk`.
+- Displays a QR code containing the link.
+- Starts polling for the recovery key.
+- Triggers `onSuccess` or `onError` callbacks when appropriate.
 
 ### Props
 
@@ -34,13 +40,6 @@ This component renders a QR code inside an `<a>` tag that links to the identity 
 - `qrProps` — optional object with props passed to `QRCodeSVG` (e.g., `size`, `fgColor`, `bgColor`, `level`, etc.).
 - `loader?` — element to render inside the loader container (e.g., a spinner or text) while the QR code link is being generated.
 - `...rest` — any valid HTML attributes applied to the `<a>` element (e.g., `className`, `style`, `target`, etc.).
-
-### What it does
-
-- Generates a recovery link using `UnforgettableSdk`.
-- Displays a QR code containing the link.
-- Starts polling for the recovery key.
-- Triggers `onSuccess` or `onError` callbacks when appropriate.
 
 ### Example usage
 
@@ -59,9 +58,17 @@ import UnforgettableQrCode from '@rarimo/unforgettable-sdk-react'
 />
 ```
 
-## Hook: useUnforgettableLink
+## Hook: useUnforgettableLink()
 
 This React hook generates a secure recovery link and handles polling for the recovered private key from the Unforgettable backend.
+
+### What it does
+
+- Instantiates the `UnforgettableSdk` with the provided mode.
+- Generates a secure link containing the public key.
+- Starts polling the backend to retrieve the encrypted recovery key.
+- On success, decrypts the key and passes it to the `onSuccess` callback.
+- On failure, stops polling and fires the `onError` callback.
 
 ### Parameters
 
@@ -77,14 +84,6 @@ This React hook generates a secure recovery link and handles polling for the rec
 ### Returns
 
 - A `string` containing the recovery link that can be passed to a QR code component or opened in a browser.
-
-### What it does
-
-- Instantiates the `UnforgettableSdk` with the provided mode.
-- Generates a secure link containing the public key.
-- Starts polling the backend to retrieve the encrypted recovery key.
-- On success, decrypts the key and returns it via `onSuccess`.
-- On failure, stops polling and triggers `onError`.
 
 ### Example usage
 
