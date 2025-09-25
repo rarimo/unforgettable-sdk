@@ -1,6 +1,6 @@
 # Unforgettable SDK
 
-`Unforgettable SDK` is a secure client-side toolkit used for key exchange and recovery within the [Unforgettable.app](https://unforgettable.app) ecosystem. It allows you to generate secure links to Unforgettable.app and retrieve a private key recovered from the specified factors.
+The `Unforgettable SDK` is a secure, client-side toolkit for key exchange and recovery in the [Unforgettable.app](https://unforgettable.app) ecosystem. It lets you generate secure links to [Unforgettable.app](https://unforgettable.app) and retrieve a private key recovered from specified factors, such as face, physical object, password, etc.
 
 ---
 
@@ -12,7 +12,7 @@ yarn add @rarimo/unforgettable-sdk
 
 ## Usage
 
-### Create recovery key
+### Setting up a recovery key
 
 1. Create a new SDK instance:
 
@@ -57,7 +57,7 @@ try {
 }
 ```
 
-### Restore existing key
+### Recovering the key
 
 1. Create a new SDK instance with the wallet address:
 
