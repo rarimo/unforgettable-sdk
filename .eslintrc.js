@@ -84,5 +84,7 @@ module.exports = {
     '**/.cache',
     '**/*.js',
     '**/*.html',
+    'jest.config.base.js',
+    'jest.config.js',
   ],
 }
