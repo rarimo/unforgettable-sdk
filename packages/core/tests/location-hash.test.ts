@@ -1,5 +1,3 @@
-import { describe } from 'node:test'
-
 import {
   composeUnforgettableLocationHash,
   parseUnforgettableLocationHash,
@@ -7,26 +5,38 @@ import {
 } from '../src'
 
 describe('url location hash utils', () => {
-  describe('url location hash composing', () => {
-    it('creates valid hash string with all params (include optional)', () => {
+  describe('composeUnforgettableLocationHash', () => {
+    it('creates valid hash string with all params', () => {
       const params = {
-        dataTransferId: '422729b4-136b-4ce6-8ae3-97427f78e20',
-        encryptionPublicKey: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA',
+        dataTransferId: 'data-transfer-id',
+        encryptionPublicKey: 'encryption-public-key',
         factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
-        walletAddress: '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+        walletAddress: '0xabc',
       }
 
       const hash = composeUnforgettableLocationHash(params)
-      expect(hash.startsWith('#')).toBe(true)
 
+      expect(hash).toBe('#id=data-transfer-id&epk=encryption-public-key&f=1%2C2%2C3&wa=0xabc')
+    })
+
+    it('it creates a hash which can be parsed into the initial params object', () => {
+      const params = {
+        dataTransferId: 'data-transfer-id',
+        encryptionPublicKey: 'encryption-public-key',
+        factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
+        walletAddress: '0xabc',
+      }
+
+      const hash = composeUnforgettableLocationHash(params)
       const parsedParams = parseUnforgettableLocationHash(hash)
+
       expect(parsedParams).toEqual(params)
     })
 
-    it('creates valid hash string with required params (exclude optional)', () => {
+    it('excludes wallet address from hash if not passed', () => {
       const params = {
-        dataTransferId: 'c466efbe-1a33-44b8-aa9a-c3611f829b3a',
-        encryptionPublicKey: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyZDzF4v7O',
+        dataTransferId: 'data-transfer-id',
+        encryptionPublicKey: 'encryption-public-key',
         factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
       }
 
@@ -40,41 +50,36 @@ describe('url location hash utils', () => {
     })
   })
 
-  describe('url location hash parsing', () => {
-    const dataTransferIdUrlParam = 'id=f773748b-832a-467a-a252-53d711e21ff3'
-    const encryptedPkUrlParam = 'epk=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxw'
+  describe('parseUnforgettableLocationHash', () => {
+    const dataTransferIdUrlParam = 'id=data-transfer-id'
+    const encryptedPkUrlParam = 'epk=encrypted-public-key'
     const factorsUrlParam = 'f=1,2,3'
-    const walletAddressUrlParam = 'wa=0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E'
-
-    const baseUrlHash = [
-      dataTransferIdUrlParam,
-      encryptedPkUrlParam,
-      factorsUrlParam,
-      walletAddressUrlParam,
-    ].join('&')
+    const walletAddressUrlParam = 'wa=0xabc'
 
     describe('location hash parsing', () => {
-      it('parses with #', () => {
-        const urlWithHashTag = `#${baseUrlHash}`
-
-        const parsedParams = parseUnforgettableLocationHash(urlWithHashTag)
+      it('parses location hash into a valid params object', () => {
+        const parsedParams = parseUnforgettableLocationHash(
+          '#id=data-transfer-id&epk=encrypted-public-key&f=1,2,3&wa=0xabc',
+        )
 
         expect(parsedParams).toEqual({
-          dataTransferId: 'f773748b-832a-467a-a252-53d711e21ff3',
-          encryptionPublicKey: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxw',
+          dataTransferId: 'data-transfer-id',
+          encryptionPublicKey: 'encrypted-public-key',
           factors: [1, 2, 3],
-          walletAddress: '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+          walletAddress: '0xabc',
         })
       })
 
       it('parses without #', () => {
-        const parsedParams = parseUnforgettableLocationHash(baseUrlHash)
+        const parsedParams = parseUnforgettableLocationHash(
+          'id=data-transfer-id&epk=encrypted-public-key&f=1,2,3&wa=0xabc',
+        )
 
         expect(parsedParams).toEqual({
-          dataTransferId: 'f773748b-832a-467a-a252-53d711e21ff3',
-          encryptionPublicKey: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxw',
+          dataTransferId: 'data-transfer-id',
+          encryptionPublicKey: 'encrypted-public-key',
           factors: [1, 2, 3],
-          walletAddress: '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+          walletAddress: '0xabc',
         })
       })
     })
@@ -84,7 +89,7 @@ describe('url location hash utils', () => {
         parseUnforgettableLocationHash(
           [encryptedPkUrlParam, factorsUrlParam, walletAddressUrlParam].join('&'),
         ),
-      ).toThrow()
+      ).toThrow('Invalid recovery path parameters')
     })
 
     it('throws an error if the encrypted public key is missing', () => {
@@ -92,11 +97,11 @@ describe('url location hash utils', () => {
         parseUnforgettableLocationHash(
           [dataTransferIdUrlParam, factorsUrlParam, walletAddressUrlParam].join('&'),
         ),
-      ).toThrow()
+      ).toThrow('Invalid recovery path parameters')
     })
 
-    describe('the factors parsing', () => {
-      it('returns empty array if factors not provided', () => {
+    describe('parseFactors', () => {
+      it('returns empty array if factors are not provided', () => {
         const parsedParams = parseUnforgettableLocationHash(
           [dataTransferIdUrlParam, encryptedPkUrlParam].join('&'),
         )
@@ -112,6 +117,14 @@ describe('url location hash utils', () => {
         expect(parsedParams.factors).toEqual([])
       })
 
+      it('returns the original order in case of repeated factors', () => {
+        const parsedParams = parseUnforgettableLocationHash(
+          [dataTransferIdUrlParam, encryptedPkUrlParam, 'f=1,2,3,2,1,3'].join('&'),
+        )
+
+        expect(parsedParams.factors).toEqual([1, 2, 3, 2, 1, 3])
+      })
+
       it('ignores empty items in the enumeration', () => {
         const parsedParams = parseUnforgettableLocationHash(
           [dataTransferIdUrlParam, encryptedPkUrlParam, '&f=1,,2,3'].join('&'),
@@ -125,7 +138,7 @@ describe('url location hash utils', () => {
           parseUnforgettableLocationHash(
             [dataTransferIdUrlParam, factorsUrlParam, '&f=1,abc,3'].join('&'),
           ),
-        ).toThrow()
+        ).toThrow('Invalid recovery path parameters')
       })
 
       it('throws an error if the factor is out of the factors registry range', () => {
@@ -135,7 +148,7 @@ describe('url location hash utils', () => {
               '&',
             ),
           ),
-        ).toThrow()
+        ).toThrow('Invalid recovery path parameters')
       })
     })
   })

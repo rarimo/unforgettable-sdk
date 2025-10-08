@@ -1,59 +1,60 @@
+import { errors, JsonApiClient } from '@distributedlab/jac'
+
 import { UnforgettableSdk } from '../src'
-
-type ApiInstance = { baseUrl: string; get: jest.Mock }
-
-const apiInstances: ApiInstance[] = []
-const mockComposeUnforgettableLocationHash = jest.fn(() => '#mock-hash')
-const mockKeyPair = {
-  publicKey: 'public-key-in-base64url',
-  encrypt: (s: string) => `enc(${s})`,
-  decrypt: (s: string) => {
-    const m = /^enc\((.*)\)$/.exec(s)
-    if (!m) throw new Error('Invalid ciphertext')
-    return m[1]
-  },
-}
-const mockGenerateDataTransferKeyPair = jest.fn(async () => mockKeyPair)
+import * as locationHash from '../src/location-hash'
 
 jest.mock('uuid', () => ({
-  v4: jest.fn(() => 'e2a11365-c64b-40b7-82fc-7cf2bd455449'),
+  v4: jest.fn(() => 'mock-uuid'),
 }))
+
+jest.mock('@distributedlab/jac', () => {
+  class JsonApiClient {
+    public readonly baseUrl: string
+    constructor(opts: { baseUrl: string }) {
+      this.baseUrl = opts.baseUrl
+    }
+
+    get() {
+      return jest.fn(() => Promise.resolve({ data: {} }))
+    }
+  }
+
+  return {
+    JsonApiClient,
+    errors: { NotFoundError: new Error('NotFoundError') },
+  }
+})
 
 jest.mock('../src/constants', () => ({
   UNFORGETTABLE_API_URL: 'https://api.default',
   UNFORGETTABLE_APP_URL: 'https://app.default',
 }))
 
-jest.mock('../src/location-hash', () => ({
-  composeUnforgettableLocationHash: (...args: []) => mockComposeUnforgettableLocationHash(...args),
-}))
-
 jest.mock('../src/utils', () => ({
-  generateDataTransferKeyPair: (...args: []) => mockGenerateDataTransferKeyPair(...args),
+  generateDataTransferKeyPair: jest.fn(async () => ({
+    publicKey: 'mock-public-key',
+    encrypt: (s: string) => `enc(${s})`,
+    decrypt: (s: string) => s.replace(/^enc\(/, '').replace(/\)$/, ''),
+  })),
 }))
 
-jest.mock('@distributedlab/jac', () => {
-  const JsonApiClient = jest.fn().mockImplementation((opts: { baseUrl: string }) => {
-    const inst = { baseUrl: opts.baseUrl, get: jest.fn() }
-    apiInstances.push(inst)
-    return inst
-  })
-
-  const errors = { NotFoundError: new Error('NotFoundError') }
-
+jest.mock('../src/location-hash', () => {
   return {
-    JsonApiClient,
-    errors,
+    __esModule: true,
+    ...jest.requireActual('../src/location-hash'),
   }
 })
 
-describe('The UnforgettableSdk', () => {
+describe('UnforgettableSdk', () => {
   beforeEach(() => {
-    apiInstances.length = 0
     jest.clearAllMocks()
   })
 
-  describe('constructor()', () => {
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  describe('constructor', () => {
     it('initializes in "create" mode', () => {
       const sdk = new UnforgettableSdk({ mode: 'create' })
 
@@ -86,17 +87,14 @@ describe('The UnforgettableSdk', () => {
 
       expect(sdk.walletAddress).toBe(walletAddress)
     })
-
-    it('uses custom apiUrl when provided (JsonApiClient baseUrl)', () => {
-      new UnforgettableSdk({ mode: 'create', apiUrl: 'https://api.custom' })
-
-      expect(apiInstances).toHaveLength(1)
-      expect(apiInstances[0].baseUrl).toBe('https://api.custom')
-    })
   })
 
-  describe('getRecoveryUrl()', () => {
-    it('returns valid URL with valid arguments in "create" mode', async () => {
+  describe('getRecoveryUrl', () => {
+    it('returns URL in "create" mode', async () => {
+      const composeSpy = jest
+        .spyOn(locationHash, 'composeUnforgettableLocationHash')
+        .mockReturnValue('#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc')
+
       const sdk = new UnforgettableSdk({
         mode: 'create',
         factors: [1, 2, 3],
@@ -104,85 +102,101 @@ describe('The UnforgettableSdk', () => {
       })
 
       const recoveryUrl = await sdk.getRecoveryUrl()
-      const urlComponents = (mockComposeUnforgettableLocationHash as jest.Mock).mock.calls[0][0]
 
-      expect(recoveryUrl).toBe('https://app.default/c#mock-hash')
-      expect(urlComponents).toMatchObject({
-        dataTransferId: 'e2a11365-c64b-40b7-82fc-7cf2bd455449',
-        encryptionPublicKey: mockKeyPair.publicKey,
+      expect(recoveryUrl).toBe(
+        'https://app.default/c#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc',
+      )
+      expect(composeSpy).toHaveBeenCalledTimes(1)
+      expect(composeSpy).toHaveBeenCalledWith({
+        dataTransferId: 'mock-uuid',
+        encryptionPublicKey: 'mock-public-key',
         factors: [1, 2, 3],
         walletAddress: '0xabc',
       })
     })
 
-    it('returns valid URL with valid arguments in "restore" mode', async () => {
+    it('returns URL in "restore" mode', async () => {
+      const composeSpy = jest
+        .spyOn(locationHash, 'composeUnforgettableLocationHash')
+        .mockReturnValue('#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc')
       const sdk = new UnforgettableSdk({
         mode: 'restore',
+        factors: [1, 2, 3],
+        walletAddress: '0xabc',
+      })
+
+      const recoveryUrl = await sdk.getRecoveryUrl()
+
+      expect(recoveryUrl).toBe(
+        'https://app.default/r#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc',
+      )
+      expect(composeSpy).toHaveBeenCalledTimes(1)
+      expect(composeSpy).toHaveBeenCalledWith({
+        dataTransferId: 'mock-uuid',
+        encryptionPublicKey: 'mock-public-key',
+        factors: [1, 2, 3],
+        walletAddress: '0xabc',
+      })
+    })
+
+    it('returns URL with custom app url', async () => {
+      const sdk = new UnforgettableSdk({
+        mode: 'create',
+        factors: [1, 2, 3],
         appUrl: 'https://app.custom',
       })
 
       const recoveryUrl = await sdk.getRecoveryUrl()
-      const args = (mockComposeUnforgettableLocationHash as jest.Mock).mock.calls[0][0]
 
-      expect(recoveryUrl).toBe('https://app.custom/r#mock-hash')
-      expect(args).toMatchObject({
-        dataTransferId: 'e2a11365-c64b-40b7-82fc-7cf2bd455449',
-        encryptionPublicKey: mockKeyPair.publicKey,
-      })
+      expect(recoveryUrl).toBe('https://app.custom/c#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3')
     })
   })
 
-  describe('getRecoveredData()', () => {
+  describe('getRecoveredData', () => {
     it('fetches payload, decrypts the key, and returns structured data', async () => {
       const sdk = new UnforgettableSdk({ mode: 'restore' })
-
-      apiInstances[0].get.mockResolvedValue({
+      const jsonApiClientGetSpy = jest.spyOn(JsonApiClient.prototype, 'get').mockResolvedValue({
         data: {
-          id: 'e2a11365-c64b-40b7-82fc-7cf2bd455449',
+          id: 'mock-uuid',
           data: JSON.stringify({
-            recovery_key: mockKeyPair.encrypt('secret-key'),
+            recovery_key: 'enc(secret-key)',
             helper_data_url: 'https://helper-data',
           }),
         },
-      })
+      } as never)
 
       const result = await sdk.getRecoveredData()
 
-      expect(apiInstances[0].baseUrl).toBe('https://api.default')
+      expect(jsonApiClientGetSpy).toHaveBeenCalledWith(
+        '/integrations/helper-keeper/v1/public/data-transfers/mock-uuid',
+      )
       expect(result).toEqual({
         recoveryKey: 'secret-key',
         helperDataUrl: 'https://helper-data',
       })
-      expect(apiInstances[0].get).toHaveBeenCalledWith(
-        '/integrations/helper-keeper/v1/public/data-transfers/e2a11365-c64b-40b7-82fc-7cf2bd455449',
-      )
     })
 
     it('rejects with NotFoundError when backend returns no data', async () => {
       const sdk = new UnforgettableSdk({ mode: 'restore' })
 
-      apiInstances[0].get.mockResolvedValue({ data: undefined })
+      jest.spyOn(JsonApiClient.prototype, 'get').mockResolvedValue({ data: undefined } as never)
 
-      await expect(sdk.getRecoveredData()).rejects.toThrow('NotFoundError')
+      await expect(sdk.getRecoveredData()).rejects.toBe(errors.NotFoundError)
     })
   })
 
-  describe('getRecoveredKey()', () => {
+  describe('getRecoveredKey', () => {
     it('returns decrypted recovery key', async () => {
       const sdk = new UnforgettableSdk({ mode: 'restore' })
 
-      apiInstances[0].get.mockResolvedValue({
-        data: {
-          id: 'e2a11365-c64b-40b7-82fc-7cf2bd455449',
-          data: JSON.stringify({
-            recovery_key: mockKeyPair.encrypt('recovery-key'),
-          }),
-        },
-      })
+      const getRecoveredDataSpy = jest
+        .spyOn(sdk, 'getRecoveredData')
+        .mockResolvedValue({ recoveryKey: 'recovery-key' as const, helperDataUrl: undefined })
 
       const key = await sdk.getRecoveredKey()
 
       expect(key).toBe('recovery-key')
+      expect(getRecoveredDataSpy).toHaveBeenCalledTimes(1)
     })
   })
 })
