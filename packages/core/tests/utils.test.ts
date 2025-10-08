@@ -10,10 +10,10 @@ describe('utils', () => {
       const keyPair = await generateDataTransferKeyPair()
 
       const cipherText = keyPair.encrypt('A')
-      const byteLenght = Buffer.from(cipherText, 'binary').length
+      const byteLength = Buffer.from(cipherText, 'binary').length
 
       expect(keyPair.publicKey).toMatch(BASE64_REGEX)
-      expect(byteLenght * 8).toBe(2048)
+      expect(byteLength * 8).toBe(2048)
     })
 
     it('returns a valid base64url public key with custom 512 length', async () => {
@@ -21,10 +21,10 @@ describe('utils', () => {
       const keyPair = await generateDataTransferKeyPair(bits)
 
       const cipherText = keyPair.encrypt('A')
-      const byteLenght = Buffer.from(cipherText, 'binary').length
+      const byteLength = Buffer.from(cipherText, 'binary').length
 
       expect(keyPair.publicKey).toMatch(BASE64_REGEX)
-      expect(byteLenght * 8).toBe(bits)
+      expect(byteLength * 8).toBe(bits)
     })
 
     it('encrypts ASCII text to a non-identical ciphertext', async () => {
