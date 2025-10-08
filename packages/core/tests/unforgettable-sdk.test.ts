@@ -1,55 +1,14 @@
 import { errors, JsonApiClient } from '@distributedlab/jac'
 
 import { UnforgettableSdk } from '../src'
-import * as locationHash from '../src/location-hash'
+import * as LocationHash from '../src/location-hash'
+import * as Utils from '../src/utils'
 
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mock-uuid'),
 }))
 
-jest.mock('@distributedlab/jac', () => {
-  class JsonApiClient {
-    public readonly baseUrl: string
-    constructor(opts: { baseUrl: string }) {
-      this.baseUrl = opts.baseUrl
-    }
-
-    get() {
-      return jest.fn(() => Promise.resolve({ data: {} }))
-    }
-  }
-
-  return {
-    JsonApiClient,
-    errors: { NotFoundError: new Error('NotFoundError') },
-  }
-})
-
-jest.mock('../src/constants', () => ({
-  UNFORGETTABLE_API_URL: 'https://api.default',
-  UNFORGETTABLE_APP_URL: 'https://app.default',
-}))
-
-jest.mock('../src/utils', () => ({
-  generateDataTransferKeyPair: jest.fn(async () => ({
-    publicKey: 'mock-public-key',
-    encrypt: (s: string) => `enc(${s})`,
-    decrypt: (s: string) => s.replace(/^enc\(/, '').replace(/\)$/, ''),
-  })),
-}))
-
-jest.mock('../src/location-hash', () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual('../src/location-hash'),
-  }
-})
-
 describe('UnforgettableSdk', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
-
   afterEach(() => {
     jest.restoreAllMocks()
   })
@@ -90,9 +49,17 @@ describe('UnforgettableSdk', () => {
   })
 
   describe('getRecoveryUrl', () => {
+    beforeEach(() => {
+      jest.spyOn(Utils, 'generateDataTransferKeyPair').mockResolvedValue({
+        publicKey: 'mock-public-key',
+        encrypt: () => 'mock-encrypted',
+        decrypt: () => 'mock-decrypted',
+      })
+    })
+
     it('returns URL in "create" mode', async () => {
       const composeSpy = jest
-        .spyOn(locationHash, 'composeUnforgettableLocationHash')
+        .spyOn(LocationHash, 'composeUnforgettableLocationHash')
         .mockReturnValue('#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc')
 
       const sdk = new UnforgettableSdk({
@@ -104,7 +71,7 @@ describe('UnforgettableSdk', () => {
       const recoveryUrl = await sdk.getRecoveryUrl()
 
       expect(recoveryUrl).toBe(
-        'https://app.default/c#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc',
+        'https://unforgettable.app/c#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc',
       )
       expect(composeSpy).toHaveBeenCalledTimes(1)
       expect(composeSpy).toHaveBeenCalledWith({
@@ -117,7 +84,7 @@ describe('UnforgettableSdk', () => {
 
     it('returns URL in "restore" mode', async () => {
       const composeSpy = jest
-        .spyOn(locationHash, 'composeUnforgettableLocationHash')
+        .spyOn(LocationHash, 'composeUnforgettableLocationHash')
         .mockReturnValue('#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc')
       const sdk = new UnforgettableSdk({
         mode: 'restore',
@@ -128,7 +95,7 @@ describe('UnforgettableSdk', () => {
       const recoveryUrl = await sdk.getRecoveryUrl()
 
       expect(recoveryUrl).toBe(
-        'https://app.default/r#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc',
+        'https://unforgettable.app/r#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc',
       )
       expect(composeSpy).toHaveBeenCalledTimes(1)
       expect(composeSpy).toHaveBeenCalledWith({
@@ -153,13 +120,21 @@ describe('UnforgettableSdk', () => {
   })
 
   describe('getRecoveredData', () => {
+    beforeEach(() => {
+      jest.spyOn(Utils, 'generateDataTransferKeyPair').mockResolvedValue({
+        publicKey: 'mock-public-key',
+        encrypt: s => `${s}-encrypted`,
+        decrypt: s => s.replace(/-encrypted$/, ''),
+      })
+    })
+
     it('fetches payload, decrypts the key, and returns structured data', async () => {
       const sdk = new UnforgettableSdk({ mode: 'restore' })
       const jsonApiClientGetSpy = jest.spyOn(JsonApiClient.prototype, 'get').mockResolvedValue({
         data: {
           id: 'mock-uuid',
           data: JSON.stringify({
-            recovery_key: 'enc(secret-key)',
+            recovery_key: 'secret-encrypted',
             helper_data_url: 'https://helper-data',
           }),
         },
@@ -171,7 +146,7 @@ describe('UnforgettableSdk', () => {
         '/integrations/helper-keeper/v1/public/data-transfers/mock-uuid',
       )
       expect(result).toEqual({
-        recoveryKey: 'secret-key',
+        recoveryKey: 'secret',
         helperDataUrl: 'https://helper-data',
       })
     })

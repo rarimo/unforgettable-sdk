@@ -1539,6 +1539,7 @@ __metadata:
   resolution: "@rarimo/unforgettable-sdk@workspace:packages/core"
   dependencies:
     "@distributedlab/jac": "npm:1.0.0-rc.17"
+    "@swc-contrib/mut-cjs-exports": "npm:11.1.0"
     "@swc/cli": "npm:0.1.65"
     "@swc/core": "npm:1.13.5"
     "@swc/jest": "npm:0.2.39"
@@ -1765,6 +1766,16 @@ __metadata:
   dependencies:
     "@sinonjs/commons": "npm:^3.0.1"
   checksum: 10c0/a707476efd523d2138ef6bba916c83c4a377a8372ef04fad87499458af9f01afc58f4f245c5fd062793d6d70587309330c6f96947b5bd5697961c18004dc3e26
+  languageName: node
+  linkType: hard
+
+"@swc-contrib/mut-cjs-exports@npm:11.1.0":
+  version: 11.1.0
+  resolution: "@swc-contrib/mut-cjs-exports@npm:11.1.0"
+  peerDependencies:
+    "@swc/core": ^1.10.0
+    "@swc/jest": ^0.2.37
+  checksum: 10c0/c55e39d5e9720f66a28782d4a5198c141fdab7ce693d2f1d0d5be7d40d11e58b3909ec2fd3cee348549bf3fb64fd1827622d2875792afacd42878d64909221a0
   languageName: node
   linkType: hard
 

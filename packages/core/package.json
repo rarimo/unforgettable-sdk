@@ -22,6 +22,7 @@
     "uuid": "9.0.1"
   },
   "devDependencies": {
+    "@swc-contrib/mut-cjs-exports": "11.1.0",
     "@swc/cli": "0.1.65",
     "@swc/core": "1.13.5",
     "@swc/jest": "0.2.39",
