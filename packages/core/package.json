@@ -13,7 +13,8 @@
     "build:cjs": "npx swc src -d ./dist/cjs --config-file ./.swcrc -C module.type=commonjs",
     "build:esm": "npx swc src -d ./dist/esm --config-file ./.swcrc -C module.type=es6 isModule=true",
     "build:types": "tsc --outDir ./dist/types --declaration --emitDeclarationOnly",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "jest"
   },
   "dependencies": {
     "@distributedlab/jac": "1.0.0-rc.17",
@@ -21,11 +22,15 @@
     "uuid": "9.0.1"
   },
   "devDependencies": {
+    "@swc-contrib/mut-cjs-exports": "11.1.0",
     "@swc/cli": "0.1.65",
-    "@swc/core": "1.12.7",
+    "@swc/core": "1.13.5",
+    "@swc/jest": "0.2.39",
+    "@types/jest": "30.0.0",
     "@types/node": "18.14.2",
     "@types/node-forge": "1",
     "@types/uuid": "10.0.0",
+    "jest": "30.0.0",
     "tsc-alias": "1.8.2",
     "typescript": "5.8.2"
   },
