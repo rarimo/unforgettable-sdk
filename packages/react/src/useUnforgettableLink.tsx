@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface UseUnforgettableLinkOptions extends UnforgettableSdkOptions {
   pollingInterval?: number
+  pollingDisabled?: boolean
   onSuccess?: (privateKey: string, helperDataUrl?: string) => void
   onError?: (error: Error) => void
 }
@@ -15,6 +16,7 @@ export function useUnforgettableLink({
   factors,
   walletAddress,
   pollingInterval = 5000,
+  pollingDisabled = false,
   onSuccess,
   onError,
 }: UseUnforgettableLinkOptions) {
@@ -44,14 +46,21 @@ export function useUnforgettableLink({
   }, [onSuccess, onError])
 
   useEffect(() => {
+    if (pollingDisabled || isFinished) {
+      if (pollingIntervalRef.current > -1) {
+        window.clearInterval(pollingIntervalRef.current)
+        pollingIntervalRef.current = -1
+      }
+      return
+    }
     const intervalId = window.setInterval(() => {
-      if (!isFinished) processKeyRecovery()
+      processKeyRecovery()
     }, pollingInterval)
 
     pollingIntervalRef.current = intervalId
 
     return () => window.clearInterval(intervalId)
-  }, [processKeyRecovery, isFinished, pollingInterval])
+  }, [processKeyRecovery, isFinished, pollingInterval, pollingDisabled])
 
   useEffect(() => {
     const loadRecoveryUrl = async () => {
