@@ -35,6 +35,7 @@ This component renders a QR code wrapped in an `<a>` tag that links to the ident
 - `factors?: RecoveryFactor[]` — optional custom recovery factors.
 - `walletAddress?: string` — wallet address to recover, required for `restore` mode.
 - `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
+- `pollingDisabled?: boolean` — optional possibility when to start pooling (default: `false`).
 - `onSuccess?: (privateKey: string, helperDataUrl?: string) => void` — callback when the private key is successfully restored.
 - `onError?: (error: Error) => void` — callback when an error occurs during polling.
 - `qrProps` — optional object with props passed to `QRCodeSVG` (e.g., `size`, `fgColor`, `bgColor`, `level`, etc.).
@@ -78,6 +79,7 @@ This React hook generates a secure recovery link and handles polling for the rec
 - `factors?: RecoveryFactor[]` — optional custom recovery factors.
 - `walletAddress?: string` — wallet address to recover, required for `restore` mode.
 - `pollingInterval?` — optional interval in milliseconds between polling attempts (default: `5000`).
+- `pollingDisabled?: boolean` — optional possibility when to start pooling (default: `false`).
 - `onSuccess?` — callback function called with the recovered private key when successful.
 - `onError?` — callback function called with an error if polling fails or the transfer is invalid.
 

@@ -106,7 +106,7 @@ describe('UnforgettableSdk', () => {
       })
     })
 
-    it('returns URL with custom app url', async () => {
+    it('returns URL with custom app URL', async () => {
       const sdk = new UnforgettableSdk({
         mode: 'create',
         factors: [1, 2, 3],
@@ -116,6 +116,20 @@ describe('UnforgettableSdk', () => {
       const recoveryUrl = await sdk.getRecoveryUrl()
 
       expect(recoveryUrl).toBe('https://app.custom/c#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3')
+    })
+
+    it('returns URL with custom app URL path', async () => {
+      const sdk = new UnforgettableSdk({
+        mode: 'create',
+        factors: [1, 2, 3],
+        appUrl: 'https://app.custom/page/',
+      })
+
+      const recoveryUrl = await sdk.getRecoveryUrl()
+
+      expect(recoveryUrl).toBe(
+        'https://app.custom/page/c#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3',
+      )
     })
   })
 

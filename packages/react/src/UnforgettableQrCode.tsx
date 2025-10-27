@@ -17,6 +17,7 @@ export default function UnforgettableQrCode({
   appUrl,
   factors,
   walletAddress,
+  pollingDisabled,
   pollingInterval,
   onSuccess,
   onError,
@@ -30,6 +31,7 @@ export default function UnforgettableQrCode({
     factors,
     walletAddress,
     pollingInterval,
+    pollingDisabled,
     onSuccess,
     onError,
   })

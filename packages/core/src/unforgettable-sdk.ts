@@ -56,7 +56,11 @@ export class UnforgettableSdk {
   async getRecoveryUrl() {
     const keypair = await this.#encryptionKeyPairPromise
 
-    const url = new URL(this.mode === 'restore' ? '/r' : '/c', this.appUrl)
+    const baseUrl = this.appUrl.endsWith('/') ? this.appUrl.slice(0, -1) : this.appUrl
+    const path = this.mode === 'restore' ? '/r' : '/c'
+
+    const url = new URL(baseUrl + path)
+
     url.hash = composeUnforgettableLocationHash({
       dataTransferId: this.#dataTransferId,
       encryptionPublicKey: keypair.publicKey,
