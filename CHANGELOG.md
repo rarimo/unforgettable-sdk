@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
+### Added
+- `react` - Add `pollingDisabled` prop to change polling behaviour
+
+### Changed
+- `core` - Allow app URL to have a custom path
 
 ## [0.5.1] - 2025-09-23
 ### Changed
