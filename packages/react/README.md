@@ -34,6 +34,8 @@ This component renders a QR code wrapped in an `<a>` tag that links to the ident
 - `apiUrl?: string` — optional API URL where you can set custom link.
 - `factors?: RecoveryFactor[]` — optional custom recovery factors.
 - `walletAddress?: string` — wallet address to recover, required for `restore` mode.
+- `group?: string` — optional identifier for grouping wallets.
+- `customParams?: Record<string, string>` — object of arbitrary key/value pairs to pass into the URL hash.
 - `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
 - `pollingDisabled?: boolean` — optional possibility when to start pooling (default: `false`).
 - `onSuccess?: (privateKey: string, helperDataUrl?: string) => void` — callback when the private key is successfully restored.
@@ -78,6 +80,8 @@ This React hook generates a secure recovery link and handles polling for the rec
 - `apiUrl` — optional API URL.
 - `factors?: RecoveryFactor[]` — optional custom recovery factors.
 - `walletAddress?: string` — wallet address to recover, required for `restore` mode.
+- `group?: string` — optional identifier for grouping wallets.
+- `customParams?: Record<string, string>` — object of arbitrary key/value pairs to pass into the URL hash.
 - `pollingInterval?` — optional interval in milliseconds between polling attempts (default: `5000`).
 - `pollingDisabled?: boolean` — optional possibility when to start pooling (default: `false`).
 - `onSuccess?` — callback function called with the recovered private key when successful.

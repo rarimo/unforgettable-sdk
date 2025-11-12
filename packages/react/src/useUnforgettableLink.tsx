@@ -15,6 +15,8 @@ export function useUnforgettableLink({
   apiUrl,
   factors,
   walletAddress,
+  group,
+  customParams,
   pollingInterval = 5000,
   pollingDisabled = false,
   onSuccess,
@@ -25,9 +27,17 @@ export function useUnforgettableLink({
   const [recoveryUrl, setRecoveryUrl] = useState<string | null>(null)
 
   const sdk = useMemo(() => {
-    return new UnforgettableSdk({ mode, appUrl, apiUrl, factors, walletAddress })
+    return new UnforgettableSdk({
+      mode,
+      appUrl,
+      apiUrl,
+      factors,
+      walletAddress,
+      group,
+      customParams,
+    })
     // Factors is an array, so we need to convert it to a string to avoid unnecessary re-creations
-  }, [mode, appUrl, apiUrl, walletAddress, factors?.toString()])
+  }, [mode, appUrl, apiUrl, walletAddress, group, customParams, factors?.toString()])
 
   const processKeyRecovery = useCallback(async () => {
     try {

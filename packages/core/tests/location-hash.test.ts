@@ -12,11 +12,16 @@ describe('url location hash utils', () => {
         encryptionPublicKey: 'test-pk',
         factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
         walletAddress: '0xabc',
+        group: 'm',
+        customParams: {
+          t: 'test-theme',
+          d: 'test-data',
+        },
       }
 
       const hash = composeUnforgettableLocationHash(params)
 
-      expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3&wa=0xabc')
+      expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3&wa=0xabc&g=m&t=test-theme&d=test-data')
     })
 
     it('it creates a hash which can be parsed into the initial params object', () => {
@@ -25,6 +30,11 @@ describe('url location hash utils', () => {
         encryptionPublicKey: 'test-pk',
         factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
         walletAddress: '0xabc',
+        group: 'm',
+        customParams: {
+          t: 'test-theme',
+          d: 'test-data',
+        },
       }
 
       const hash = composeUnforgettableLocationHash(params)
@@ -49,13 +59,30 @@ describe('url location hash utils', () => {
       expect(urlSearchParams.get('wa')).toBeNull()
       expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3')
     })
+
+    it('excludes group from hash if not passed', () => {
+      const params = {
+        dataTransferId: 'test-id',
+        encryptionPublicKey: 'test-pk',
+        factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
+      }
+
+      const hash = composeUnforgettableLocationHash(params)
+      const urlSearchParams = new URLSearchParams(hash.slice(1))
+
+      expect(urlSearchParams.get('id')).toBe(params.dataTransferId)
+      expect(urlSearchParams.get('epk')).toBe(params.encryptionPublicKey)
+      expect(urlSearchParams.get('f')).toBe(params.factors.join(','))
+      expect(urlSearchParams.get('g')).toBeNull()
+      expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3')
+    })
   })
 
   describe('parseUnforgettableLocationHash', () => {
     describe('location hash parsing', () => {
       it('parses location hash into a valid params object', () => {
         const parsedParams = parseUnforgettableLocationHash(
-          '#id=test-id&epk=test-pk&f=1,2,3&wa=0xabc',
+          '#id=test-id&epk=test-pk&f=1,2,3&wa=0xabc&g=m',
         )
 
         expect(parsedParams).toEqual({
@@ -63,12 +90,13 @@ describe('url location hash utils', () => {
           encryptionPublicKey: 'test-pk',
           factors: [1, 2, 3],
           walletAddress: '0xabc',
+          group: 'm',
         })
       })
 
       it('parses without #', () => {
         const parsedParams = parseUnforgettableLocationHash(
-          'id=test-id&epk=test-pk&f=1,2,3&wa=0xabc',
+          'id=test-id&epk=test-pk&f=1,2,3&wa=0xabc&g=m',
         )
 
         expect(parsedParams).toEqual({
@@ -76,6 +104,38 @@ describe('url location hash utils', () => {
           encryptionPublicKey: 'test-pk',
           factors: [1, 2, 3],
           walletAddress: '0xabc',
+          group: 'm',
+        })
+      })
+
+      describe('parsing custom params', () => {
+        it('parses location hash with custom params into a valid params object', () => {
+          const parsedParams = parseUnforgettableLocationHash(
+            '#id=test-id&epk=test-pk&f=1,2,3&t=light&t=test-theme&d=test-data&r',
+          )
+
+          expect(parsedParams).toEqual({
+            dataTransferId: 'test-id',
+            encryptionPublicKey: 'test-pk',
+            factors: [1, 2, 3],
+            customParams: {
+              t: 'test-theme',
+              d: 'test-data',
+              r: '',
+            },
+          })
+        })
+
+        it('parses location hash with custom params and does not overwrite a required path params', () => {
+          const parsedParams = parseUnforgettableLocationHash(
+            '#id=test-id&epk=original-pk&f=1,2,3&epk=overwritten-pk',
+          )
+
+          expect(parsedParams).toEqual({
+            dataTransferId: 'test-id',
+            encryptionPublicKey: 'original-pk',
+            factors: [1, 2, 3],
+          })
         })
       })
     })

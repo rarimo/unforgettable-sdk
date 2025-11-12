@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
+### Added
+- `core` - Add `group` and `customParams` SDK options.
+- `react` - Add support for the new SDK options.
 
 ## [0.6.0] - 2025-10-27
 ### Added
