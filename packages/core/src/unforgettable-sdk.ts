@@ -23,6 +23,8 @@ export interface UnforgettableSdkOptions {
   apiUrl?: string
   factors?: RecoveryFactor[]
   walletAddress?: string
+  group?: string
+  customParams?: Record<string, string>
 }
 
 export interface RecoveredData {
@@ -35,6 +37,8 @@ export class UnforgettableSdk {
   appUrl: string
   factors: RecoveryFactor[]
   walletAddress?: string
+  group?: string
+  customParams?: Record<string, string>
 
   #dataTransferId: string
   #encryptionKeyPairPromise: Promise<DataTransferKeyPair>
@@ -45,6 +49,8 @@ export class UnforgettableSdk {
     this.appUrl = opts.appUrl || UNFORGETTABLE_APP_URL
     this.factors = opts.factors || []
     this.walletAddress = opts.walletAddress
+    this.group = opts.group
+    this.customParams = opts.customParams
 
     this.#apiClient = new JsonApiClient({
       baseUrl: opts.apiUrl || UNFORGETTABLE_API_URL,
@@ -66,6 +72,8 @@ export class UnforgettableSdk {
       encryptionPublicKey: keypair.publicKey,
       factors: this.factors,
       walletAddress: this.walletAddress,
+      group: this.group,
+      customParams: this.customParams,
     })
 
     return url.toString()

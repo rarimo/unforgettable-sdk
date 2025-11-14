@@ -46,6 +46,20 @@ describe('UnforgettableSdk', () => {
 
       expect(sdk.walletAddress).toBe(walletAddress)
     })
+
+    it('stores provided group', () => {
+      const group = 'group'
+      const sdk = new UnforgettableSdk({ mode: 'create', group })
+
+      expect(sdk.group).toBe(group)
+    })
+
+    it('stores provided custom url params', () => {
+      const customParams = { d: 'data', t: 'theme' }
+      const sdk = new UnforgettableSdk({ mode: 'create', customParams })
+
+      expect(sdk.customParams).toBe(customParams)
+    })
   })
 
   describe('getRecoveryUrl', () => {
@@ -60,18 +74,19 @@ describe('UnforgettableSdk', () => {
     it('returns URL in "create" mode', async () => {
       const composeSpy = jest
         .spyOn(LocationHash, 'composeUnforgettableLocationHash')
-        .mockReturnValue('#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc')
+        .mockReturnValue('#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc&g=group')
 
       const sdk = new UnforgettableSdk({
         mode: 'create',
         factors: [1, 2, 3],
         walletAddress: '0xabc',
+        group: 'group',
       })
 
       const recoveryUrl = await sdk.getRecoveryUrl()
 
       expect(recoveryUrl).toBe(
-        'https://unforgettable.app/c#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc',
+        'https://unforgettable.app/c#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc&g=group',
       )
       expect(composeSpy).toHaveBeenCalledTimes(1)
       expect(composeSpy).toHaveBeenCalledWith({
@@ -79,23 +94,25 @@ describe('UnforgettableSdk', () => {
         encryptionPublicKey: 'mock-public-key',
         factors: [1, 2, 3],
         walletAddress: '0xabc',
+        group: 'group',
       })
     })
 
     it('returns URL in "restore" mode', async () => {
       const composeSpy = jest
         .spyOn(LocationHash, 'composeUnforgettableLocationHash')
-        .mockReturnValue('#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc')
+        .mockReturnValue('#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc&g=group')
       const sdk = new UnforgettableSdk({
         mode: 'restore',
         factors: [1, 2, 3],
         walletAddress: '0xabc',
+        group: 'group',
       })
 
       const recoveryUrl = await sdk.getRecoveryUrl()
 
       expect(recoveryUrl).toBe(
-        'https://unforgettable.app/r#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc',
+        'https://unforgettable.app/r#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc&g=group',
       )
       expect(composeSpy).toHaveBeenCalledTimes(1)
       expect(composeSpy).toHaveBeenCalledWith({
@@ -103,6 +120,7 @@ describe('UnforgettableSdk', () => {
         encryptionPublicKey: 'mock-public-key',
         factors: [1, 2, 3],
         walletAddress: '0xabc',
+        group: 'group',
       })
     })
 
@@ -129,6 +147,24 @@ describe('UnforgettableSdk', () => {
 
       expect(recoveryUrl).toBe(
         'https://app.custom/page/c#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3',
+      )
+    })
+
+    it('returns URL with custom URL params', async () => {
+      const sdk = new UnforgettableSdk({
+        mode: 'create',
+        factors: [1, 2, 3],
+        appUrl: 'https://app.custom/page/',
+        customParams: {
+          t: 'test-theme',
+          d: 'test-data',
+        },
+      })
+
+      const recoveryUrl = await sdk.getRecoveryUrl()
+
+      expect(recoveryUrl).toBe(
+        'https://app.custom/page/c#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&t=test-theme&d=test-data',
       )
     })
   })
