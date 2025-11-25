@@ -6,9 +6,16 @@ export interface DataTransferKeyPair {
   decrypt(encryptedData: string): string
 }
 
+// Detect if we're in a React Native environment
+const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative'
+
 export function generateDataTransferKeyPair(bits = 2048): Promise<DataTransferKeyPair> {
+  // Use smaller key size and synchronous generation for React Native (much faster)
+  const effectiveBits = isReactNative ? 1024 : bits
+  const options = isReactNative ? { bits: effectiveBits, workers: -1 } : { bits: effectiveBits }
+
   return new Promise<DataTransferKeyPair>((resolve, reject) => {
-    pki.rsa.generateKeyPair({ bits }, (err, keypair) => {
+    pki.rsa.generateKeyPair(options, (err, keypair) => {
       if (err) return reject(err)
 
       resolve({

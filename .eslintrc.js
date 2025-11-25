@@ -23,6 +23,7 @@ module.exports = {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
+    'import/ignore': ['react-native'],
     'import/resolver': {
       typescript: {},
       node: {
