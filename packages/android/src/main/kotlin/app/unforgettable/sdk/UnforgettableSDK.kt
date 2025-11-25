@@ -31,11 +31,22 @@ data class UnforgettableSdkOptions(
 )
 
 /**
- * Data transfer response from API
+ * API response wrapper
  */
 @Serializable
-data class DataTransfer(
+private data class DataTransferResponse(
+    val data: DataTransferWrapper? = null
+)
+
+@Serializable
+private data class DataTransferWrapper(
     val id: String,
+    val type: String,
+    val attributes: DataTransferAttributes
+)
+
+@Serializable
+private data class DataTransferAttributes(
     val data: String
 )
 
@@ -48,14 +59,6 @@ private data class DataTransferPayload(
     val recoveryKey: String,
     @SerialName("helper_data_url")
     val helperDataUrl: String? = null
-)
-
-/**
- * API response wrapper
- */
-@Serializable
-private data class DataTransferResponse(
-    val data: DataTransfer? = null
 )
 
 /**
@@ -89,7 +92,7 @@ public class UnforgettableSDK(options: UnforgettableSdkOptions) {
     val customParams: Map<String, String>? = options.customParams
     
     private val apiUrl: String = options.apiUrl
-    private val dataTransferId: String = UUID.randomUUID().toString()
+    private val dataTransferId: String = UUID.randomUUID().toString().lowercase()
     private val encryptionKeyPair: DataTransferKeyPair = generateDataTransferKeyPair()
     
     private val json = Json {
@@ -147,17 +150,21 @@ public class UnforgettableSDK(options: UnforgettableSdkOptions) {
                             throw UnforgettableSDKError.DecodingError(e)
                         }
                         
-                        val dataTransfer = response.data
+                        val dataTransferWrapper = response.data
                             ?: throw UnforgettableSDKError.NotFound
                         
                         val payload = try {
-                            json.decodeFromString<DataTransferPayload>(dataTransfer.data)
+                            json.decodeFromString<DataTransferPayload>(dataTransferWrapper.attributes.data)
                         } catch (e: Exception) {
                             throw UnforgettableSDKError.DecodingError(e)
                         }
                         
+                        // The recovery_key contains raw binary data incorrectly encoded as a UTF-8 string
+                        // We need to convert it back to bytes using ISO-8859-1 encoding
+                        val encryptedBytes = payload.recoveryKey.toByteArray(Charsets.ISO_8859_1)
+                        
                         val decryptedKey = try {
-                            encryptionKeyPair.decrypt(payload.recoveryKey)
+                            encryptionKeyPair.decryptBinary(encryptedBytes)
                         } catch (e: Exception) {
                             throw UnforgettableSDKError.CryptoError(e)
                         }

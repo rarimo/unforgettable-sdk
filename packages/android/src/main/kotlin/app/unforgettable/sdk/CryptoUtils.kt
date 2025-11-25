@@ -63,6 +63,22 @@ class DataTransferKeyPair(
         }
     }
 
+    /**
+     * Decrypts binary data using the private key
+     * @param encryptedBytes The raw encrypted binary data
+     * @return The decrypted data as a string
+     */
+    fun decryptBinary(encryptedBytes: ByteArray): String {
+        return try {
+            val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
+            cipher.init(Cipher.DECRYPT_MODE, keyPair.private)
+            val decryptedBytes = cipher.doFinal(encryptedBytes)
+            String(decryptedBytes, Charsets.UTF_8)
+        } catch (e: Exception) {
+            throw CryptoError.DecryptionFailed
+        }
+    }
+
     private fun convertToBase64URL(publicKey: PublicKey): String {
         val pemData = createPEMFromPublicKey(publicKey)
         return pemToBase64URL(pemData)
