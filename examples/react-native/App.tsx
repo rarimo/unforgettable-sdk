@@ -27,9 +27,6 @@ const RECOVERY_FACTORS = [
   { key: RecoveryFactor.Face, label: 'Face' },
   { key: RecoveryFactor.Image, label: 'Image' },
   { key: RecoveryFactor.Password, label: 'Password' },
-  { key: RecoveryFactor.Object, label: 'Object' },
-  { key: RecoveryFactor.Book, label: 'Book' },
-  { key: RecoveryFactor.Geolocation, label: 'Geolocation' },
 ]
 
 function App(): React.JSX.Element {

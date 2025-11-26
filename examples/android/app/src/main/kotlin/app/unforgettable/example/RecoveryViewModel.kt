@@ -59,7 +59,11 @@ class RecoveryViewModel : ViewModel() {
     private var sdk: UnforgettableSDK? = null
     private var pollingJob: Job? = null
     
-    val allFactors = RecoveryFactor.values().toList()
+    val allFactors = listOf(
+        RecoveryFactor.FACE,
+        RecoveryFactor.IMAGE,
+        RecoveryFactor.PASSWORD
+    )
     
     fun setMode(newMode: UnforgettableMode) {
         _mode.value = newMode

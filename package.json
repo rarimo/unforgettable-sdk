@@ -4,7 +4,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "examples/basic-recovery-react"
+    "examples/react"
   ],
   "gitHooks": {
     "pre-commit": "yarn lint",
@@ -12,10 +12,7 @@
   },
   "scripts": {
     "build": "yarn workspaces foreach --no-private -pv --topological-dev --verbose --all run build",
-    "lint": "yarn lint:eslint && yarn lint:misc --check",
-    "lint:eslint": "eslint ./packages",
-    "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
-    "lint:misc": "prettier '**/*.json' '**/*.md' '!**/CHANGELOG.md' '**/*.yml'",
+    "lint": "eslint ./packages",
     "version": "node scripts/sync-version.js && rlx changelog release $(yarn package-version) && git add .",
     "publish:stable": "yarn build && yarn workspaces foreach --no-private --all exec yarn npm publish",
     "package-version": "node -p \"require('./package.json').version\"",
