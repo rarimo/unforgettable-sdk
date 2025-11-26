@@ -20,10 +20,9 @@
     "qrcode.react": "4.2.0"
   },
   "devDependencies": {
-    "@distributedlab/jac": "1.0.0-rc.17",
     "@types/node": "18.14.2",
-    "@types/react": "19.0.0",
-    "react": "19.1.0",
+    "@types/react": "^19.2.0",
+    "react": "^19.2.0",
     "tsc-alias": "1.8.2"
   },
   "peerDependencies": {

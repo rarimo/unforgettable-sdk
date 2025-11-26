@@ -2,7 +2,10 @@ import 'react-native-get-random-values'
 import 'react-native-url-polyfill/auto'
 import 'fastestsmallesttextencoderdecoder'
 
-import { RecoveryFactor, UnforgettableMode, UnforgettableSdk } from '@unforgettable/core'
+import { Buffer } from 'buffer'
+global.Buffer = Buffer
+
+import { RecoveryFactor, UnforgettableMode, UnforgettableSdk } from '@rarimo/unforgettable-sdk'
 import React, { useEffect, useState } from 'react'
 import {
   Clipboard,

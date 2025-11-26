@@ -3,93 +3,72 @@ import { encryptDataTransferData, generateDataTransferKeyPair } from '../src'
 const BASE64_REGEX = /^[A-Za-z0-9\-_]+$/
 
 describe('utils', () => {
-  const plainText = 'text'
+  const plainText = 'test message for encryption'
 
   describe('generateDataTransferKeyPair', () => {
-    it('returns a valid base64url public key with default 2048 length', async () => {
+    it('returns a valid base64url public key (32 bytes for X25519)', async () => {
       const keyPair = await generateDataTransferKeyPair()
-
-      const cipherText = keyPair.encrypt('A')
-      const byteLength = Buffer.from(cipherText, 'binary').length
 
       expect(keyPair.publicKey).toMatch(BASE64_REGEX)
-      expect(byteLength * 8).toBe(2048)
+      expect(keyPair.publicKey.length).toBe(43) // 32 bytes base64url encoded
     })
 
-    it('returns a valid base64url public key with custom 512 length', async () => {
-      const bits = 512
-      const keyPair = await generateDataTransferKeyPair(bits)
+    it('generates different key pairs on each call', async () => {
+      const keyPair1 = await generateDataTransferKeyPair()
+      const keyPair2 = await generateDataTransferKeyPair()
 
-      const cipherText = keyPair.encrypt('A')
-      const byteLength = Buffer.from(cipherText, 'binary').length
-
-      expect(keyPair.publicKey).toMatch(BASE64_REGEX)
-      expect(byteLength * 8).toBe(bits)
-    })
-
-    it('encrypts ASCII text to a non-identical ciphertext', async () => {
-      const keyPair = await generateDataTransferKeyPair()
-
-      const encryptedText = keyPair.encrypt(plainText)
-
-      expect(encryptedText).not.toEqual(plainText)
-    })
-
-    it('decrypts back to the original ASCII text', async () => {
-      const keyPair = await generateDataTransferKeyPair()
-
-      const encryptedText = keyPair.encrypt(plainText)
-      const decryptedText = keyPair.decrypt(encryptedText)
-
-      expect(decryptedText).toEqual(plainText)
-    })
-
-    it('throws when message exceeds the size limit', async () => {
-      const keyPair = await generateDataTransferKeyPair(512)
-      const tooLongText = 'A'.repeat(512)
-
-      expect(() => keyPair.encrypt(tooLongText)).toThrow(
-        'Message is too long for PKCS#1 v1.5 padding.',
-      )
+      expect(keyPair1.publicKey).not.toEqual(keyPair2.publicKey)
     })
   })
 
   describe('encryptDataTransferData', () => {
-    it('can decrypt the encrypted data with key pair private key', async () => {
+    it('encrypts and decrypts data correctly', async () => {
       const keyPair = await generateDataTransferKeyPair()
 
       const encryptedData = encryptDataTransferData(keyPair.publicKey, plainText)
       const decryptedData = keyPair.decrypt(encryptedData)
 
-      expect(decryptedData).not.toEqual(encryptedData)
       expect(decryptedData).toEqual(plainText)
+      expect(encryptedData).not.toEqual(plainText)
     })
 
-    it('supports multiple encryptions with the same public key', async () => {
+    it('produces different ciphertexts for same plaintext (random nonce)', async () => {
       const keyPair = await generateDataTransferKeyPair()
 
-      const firstEncryptedData = encryptDataTransferData(keyPair.publicKey, plainText)
-      const secondEncryptedData = encryptDataTransferData(keyPair.publicKey, plainText)
+      const encrypted1 = encryptDataTransferData(keyPair.publicKey, plainText)
+      const encrypted2 = encryptDataTransferData(keyPair.publicKey, plainText)
 
-      expect(keyPair.decrypt(firstEncryptedData)).toBe(plainText)
-      expect(keyPair.decrypt(secondEncryptedData)).toBe(plainText)
+      expect(encrypted1).not.toEqual(encrypted2)
+      expect(keyPair.decrypt(encrypted1)).toBe(plainText)
+      expect(keyPair.decrypt(encrypted2)).toBe(plainText)
     })
 
-    it('throws an error for an invalid public key', () => {
-      const invalidPublicKey = 'invalid-base64=key'
+    it('cannot decrypt with wrong key pair', async () => {
+      const keyPair1 = await generateDataTransferKeyPair()
+      const keyPair2 = await generateDataTransferKeyPair()
 
-      expect(() => encryptDataTransferData(invalidPublicKey, plainText)).toThrow(
-        'Too few bytes to read ASN.1 value.',
-      )
+      const ciphertext = encryptDataTransferData(keyPair1.publicKey, plainText)
+
+      expect(() => keyPair2.decrypt(ciphertext)).toThrow()
     })
 
-    it('throws an error when decrypting with another key pair', async () => {
-      const firstKeyPair = await generateDataTransferKeyPair()
-      const secondKeyPair = await generateDataTransferKeyPair()
+    it('handles empty string', async () => {
+      const keyPair = await generateDataTransferKeyPair()
 
-      const ciphertext = encryptDataTransferData(firstKeyPair.publicKey, plainText)
+      const encrypted = encryptDataTransferData(keyPair.publicKey, '')
+      const decrypted = keyPair.decrypt(encrypted)
 
-      expect(() => secondKeyPair.decrypt(ciphertext)).toThrow('Encryption block is invalid.')
+      expect(decrypted).toBe('')
+    })
+
+    it('handles unicode characters', async () => {
+      const keyPair = await generateDataTransferKeyPair()
+      const unicodeText = 'Hello 世界 🌍'
+
+      const encrypted = encryptDataTransferData(keyPair.publicKey, unicodeText)
+      const decrypted = keyPair.decrypt(encrypted)
+
+      expect(decrypted).toBe(unicodeText)
     })
   })
 })

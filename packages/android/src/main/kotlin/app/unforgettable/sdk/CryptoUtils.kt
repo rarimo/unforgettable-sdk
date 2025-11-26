@@ -1,15 +1,13 @@
 package app.unforgettable.sdk
 
-import java.security.KeyPair
+import com.google.crypto.tink.subtle.X25519
+import com.google.crypto.tink.subtle.Hkdf
+import java.security.SecureRandom
 import java.util.Base64
-import java.security.KeyPairGenerator
-import java.security.PrivateKey
-import java.security.PublicKey
 import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
-/**
- * Errors that can occur during cryptographic operations
- */
 sealed class CryptoError : Exception() {
     object KeyGenerationFailed : CryptoError()
     object EncryptionFailed : CryptoError()
@@ -17,168 +15,122 @@ sealed class CryptoError : Exception() {
     object InvalidPublicKey : CryptoError()
     object EncodingFailed : CryptoError()
     object DecodingFailed : CryptoError()
+    object InvalidCiphertext : CryptoError()
 }
 
-/**
- * A key pair for data transfer encryption
- */
 class DataTransferKeyPair(
-    private val keyPair: KeyPair
+    val publicKey: String,
+    private val privateKey: ByteArray
 ) {
-    /**
-     * Base64 URL-encoded public key
-     */
-    val publicKey: String = convertToBase64URL(keyPair.public)
-
-    /**
-     * Encrypts data using the public key
-     * @param data The string data to encrypt
-     * @return The encrypted data as a base64-encoded string
-     */
-    fun encrypt(data: String): String {
-        return try {
-            val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-            cipher.init(Cipher.ENCRYPT_MODE, keyPair.public)
-            val encryptedBytes = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
-            Base64.getEncoder().encodeToString(encryptedBytes)
-        } catch (e: Exception) {
-            throw CryptoError.EncryptionFailed
-        }
-    }
-
-    /**
-     * Decrypts data using the private key
-     * @param encryptedData The base64-encoded encrypted string data
-     * @return The decrypted data as a string
-     */
     fun decrypt(encryptedData: String): String {
         return try {
-            val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-            cipher.init(Cipher.DECRYPT_MODE, keyPair.private)
-            val encryptedBytes = Base64.getDecoder().decode(encryptedData)
-            val decryptedBytes = cipher.doFinal(encryptedBytes)
+            val combined = base64URLDecode(encryptedData)
+            
+            if (combined.size < 32 + 12 + 16) {
+                throw CryptoError.InvalidCiphertext
+            }
+            
+            val ephemeralPublicKey = combined.sliceArray(0 until 32)
+            val nonce = combined.sliceArray(32 until 44)
+            val ciphertext = combined.sliceArray(44 until combined.size)
+            
+            val sharedSecret = X25519.computeSharedSecret(privateKey, ephemeralPublicKey)
+            val encryptionKey = deriveEncryptionKey(sharedSecret)
+            
+            val decryptedBytes = decryptChaCha20Poly1305(encryptionKey, nonce, ciphertext)
+            
             String(decryptedBytes, Charsets.UTF_8)
         } catch (e: Exception) {
             throw CryptoError.DecryptionFailed
         }
     }
-
-    /**
-     * Decrypts binary data using the private key
-     * @param encryptedBytes The raw encrypted binary data
-     * @return The decrypted data as a string
-     */
+    
     fun decryptBinary(encryptedBytes: ByteArray): String {
-        return try {
-            val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-            cipher.init(Cipher.DECRYPT_MODE, keyPair.private)
-            val decryptedBytes = cipher.doFinal(encryptedBytes)
-            String(decryptedBytes, Charsets.UTF_8)
-        } catch (e: Exception) {
-            throw CryptoError.DecryptionFailed
-        }
-    }
-
-    private fun convertToBase64URL(publicKey: PublicKey): String {
-        val pemData = createPEMFromPublicKey(publicKey)
-        return pemToBase64URL(pemData)
-    }
-
-    private fun createPEMFromPublicKey(publicKey: PublicKey): String {
-        val base64String = Base64.getEncoder().encodeToString(publicKey.encoded)
-        val lines = base64String.chunked(64)
-        
-        return buildString {
-            appendLine("-----BEGIN PUBLIC KEY-----")
-            lines.forEach { line -> appendLine(line) }
-            appendLine("-----END PUBLIC KEY-----")
-        }
-    }
-
-    private fun pemToBase64URL(pem: String): String {
-        return pem
-            .replace("-----BEGIN PUBLIC KEY-----", "")
-            .replace("-----END PUBLIC KEY-----", "")
-            .replace("\r", "")
-            .replace("\n", "")
-            .replace("+", "-")
-            .replace("/", "_")
-            .trim()
-            .replace("=", "")
+        val base64URLString = String(encryptedBytes, Charsets.ISO_8859_1)
+        return decrypt(base64URLString)
     }
 }
 
-/**
- * Generates a data transfer key pair
- * @param bits The key size in bits (default: 2048)
- * @return A DataTransferKeyPair
- */
-fun generateDataTransferKeyPair(bits: Int = 2048): DataTransferKeyPair {
+fun generateDataTransferKeyPair(): DataTransferKeyPair {
     return try {
-        val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
-        keyPairGenerator.initialize(bits)
-        val keyPair = keyPairGenerator.generateKeyPair()
-        DataTransferKeyPair(keyPair)
+        val privateKey = X25519.generatePrivateKey()
+        val publicKey = X25519.publicFromPrivate(privateKey)
+        val publicKeyBase64URL = base64URLEncode(publicKey)
+        
+        DataTransferKeyPair(publicKeyBase64URL, privateKey)
     } catch (e: Exception) {
         throw CryptoError.KeyGenerationFailed
     }
 }
 
-/**
- * Encrypts data using a base64 URL-encoded public key
- * @param publicKey Base64 URL-encoded public key
- * @param data The string data to encrypt
- * @return The encrypted data as a base64-encoded string
- */
 fun encryptDataTransferData(publicKey: String, data: String): String {
     return try {
-        val pemKey = base64URLToPEM(publicKey)
-        val publicKeyObj = extractPublicKey(pemKey)
+        val recipientPublicKey = base64URLDecode(publicKey)
+        if (recipientPublicKey.size != 32) {
+            throw CryptoError.InvalidPublicKey
+        }
         
-        val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-        cipher.init(Cipher.ENCRYPT_MODE, publicKeyObj)
-        val encryptedBytes = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
-        Base64.getEncoder().encodeToString(encryptedBytes)
+        val ephemeralPrivateKey = X25519.generatePrivateKey()
+        val ephemeralPublicKey = X25519.publicFromPrivate(ephemeralPrivateKey)
+        
+        val sharedSecret = X25519.computeSharedSecret(ephemeralPrivateKey, recipientPublicKey)
+        val encryptionKey = deriveEncryptionKey(sharedSecret)
+        
+        val nonce = ByteArray(12)
+        SecureRandom().nextBytes(nonce)
+        
+        val dataBytes = data.toByteArray(Charsets.UTF_8)
+        val encrypted = encryptChaCha20Poly1305(encryptionKey, nonce, dataBytes)
+        
+        val combined = ByteArray(32 + 12 + encrypted.size)
+        System.arraycopy(ephemeralPublicKey, 0, combined, 0, 32)
+        System.arraycopy(nonce, 0, combined, 32, 12)
+        System.arraycopy(encrypted, 0, combined, 44, encrypted.size)
+        
+        base64URLEncode(combined)
     } catch (e: Exception) {
         throw CryptoError.EncryptionFailed
     }
 }
 
-// Private helper functions
+private fun encryptChaCha20Poly1305(key: ByteArray, nonce: ByteArray, plaintext: ByteArray): ByteArray {
+    val cipher = Cipher.getInstance("ChaCha20-Poly1305")
+    val keySpec = SecretKeySpec(key, "ChaCha20")
+    val ivSpec = IvParameterSpec(nonce)
+    cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
+    return cipher.doFinal(plaintext)
+}
 
-private fun base64URLToPEM(base64URL: String): String {
-    var base64 = base64URL
+private fun decryptChaCha20Poly1305(key: ByteArray, nonce: ByteArray, ciphertext: ByteArray): ByteArray {
+    val cipher = Cipher.getInstance("ChaCha20-Poly1305")
+    val keySpec = SecretKeySpec(key, "ChaCha20")
+    val ivSpec = IvParameterSpec(nonce)
+    cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
+    return cipher.doFinal(ciphertext)
+}
+
+private fun deriveEncryptionKey(sharedSecret: ByteArray, info: String = "unforgettable-encryption"): ByteArray {
+    val infoBytes = info.toByteArray(Charsets.UTF_8)
+    return Hkdf.computeHkdf("HmacSha256", sharedSecret, null, infoBytes, 32)
+}
+
+private fun base64URLEncode(data: ByteArray): String {
+    val base64 = Base64.getEncoder().encodeToString(data)
+    return base64
+        .replace("+", "-")
+        .replace("/", "_")
+        .replace("=", "")
+}
+
+private fun base64URLDecode(string: String): ByteArray {
+    var base64 = string
         .replace("-", "+")
         .replace("_", "/")
     
-    // Add padding
     val remainder = base64.length % 4
     if (remainder > 0) {
         base64 += "=".repeat(4 - remainder)
     }
     
-    val lines = base64.chunked(64)
-    return buildString {
-        appendLine("-----BEGIN PUBLIC KEY-----")
-        lines.forEach { appendLine(it) }
-        appendLine("-----END PUBLIC KEY-----")
-    }
-}
-
-private fun extractPublicKey(pem: String): PublicKey {
-    try {
-        val base64String = pem
-            .replace("-----BEGIN PUBLIC KEY-----", "")
-            .replace("-----END PUBLIC KEY-----", "")
-            .replace("\r", "")
-            .replace("\n", "")
-            .trim()
-        
-        val keyBytes = Base64.getDecoder().decode(base64String)
-        val keySpec = java.security.spec.X509EncodedKeySpec(keyBytes)
-        val keyFactory = java.security.KeyFactory.getInstance("RSA")
-        return keyFactory.generatePublic(keySpec)
-    } catch (e: Exception) {
-        throw CryptoError.InvalidPublicKey
-    }
+    return Base64.getDecoder().decode(base64)
 }
