@@ -87,5 +87,10 @@ module.exports = {
     '**/*.html',
     'jest.config.base.js',
     'jest.config.js',
+    '/packages/ios/',
+    '/packages/android/',
+    '/examples/ios/',
+    '/examples/android/',
+    '/examples/react-native/',
   ],
 }

@@ -13,10 +13,10 @@
   "scripts": {
     "build": "yarn workspaces foreach --no-private -pv --topological-dev --verbose --all run build",
     "lint": "yarn lint:eslint && yarn lint:misc --check",
-    "lint:eslint": "eslint ./packages --ignore-path .gitignore",
+    "lint:eslint": "eslint ./packages",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
-    "lint:misc": "prettier '**/*.json' '**/*.md' '!**/CHANGELOG.md' '**/*.yml' --ignore-path .gitignore",
-    "version": "yarn workspaces foreach --no-private --all exec yarn version $npm_package_version && rlx changelog release $(yarn package-version) && git add .",
+    "lint:misc": "prettier '**/*.json' '**/*.md' '!**/CHANGELOG.md' '**/*.yml'",
+    "version": "node scripts/sync-version.js && rlx changelog release $(yarn package-version) && git add .",
     "publish:stable": "yarn build && yarn workspaces foreach --no-private --all exec yarn npm publish",
     "package-version": "node -p \"require('./package.json').version\"",
     "test": "yarn workspaces foreach -pv --no-private --all run test"
@@ -39,7 +39,8 @@
     "jest": "^30.0.0",
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "yorkie": "^2.0.0"
   },
   "packageManager": "yarn@4.9.2"
 }

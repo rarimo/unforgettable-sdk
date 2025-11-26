@@ -1,4 +1,4 @@
-# Unforgettable React SDK 
+# Unforgettable React SDK
 
 React QR code component for the [Unforgettable SDK](https://github.com/rarimo/unforgettable-sdk). Add identity verification to your React app with a scannable QR code that works with [Unforgettable.app](https://unforgettable.app).
 
@@ -50,8 +50,7 @@ This component renders a QR code wrapped in an `<a>` tag that links to the ident
 import UnforgettableQrCode from '@rarimo/unforgettable-sdk-react'
 
 // ...
-
-<UnforgettableQrCode
+;<UnforgettableQrCode
   mode='create'
   qrProps={{ size: 200 }}
   loader={<span>Loading...</span>}

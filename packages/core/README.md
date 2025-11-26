@@ -27,7 +27,7 @@ const sdk = new UnforgettableSdk({
   // Optional, defaults to 'https://api.unforgettable.app'
   apiUrl: 'https://api.custom.app',
   // Factors to use for recovery. If not provided, the user will select them during the recovery process.
-  factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password]
+  factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
 })
 ```
 
@@ -51,9 +51,9 @@ try {
 } catch (error) {
   if (error?.httpStatus === 404) {
     // No recovery data found yet, try again later
-   } else {
+  } else {
     console.error('Recovery error:', error)
-   }
+  }
 }
 ```
 
@@ -69,7 +69,7 @@ const sdk = new UnforgettableSdk({
   walletAddress: '0x1234...abcd', // The wallet address associated with the key to recover
   appUrl: 'https://custom.app', // Optional
   apiUrl: 'https://api.custom.app', // Optional
-  factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password] // Optional
+  factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password], // Optional
 })
 ```
 
@@ -89,9 +89,9 @@ try {
 } catch (error) {
   if (error?.httpStatus === 404) {
     // No recovery data found yet, try again later
-   } else {
+  } else {
     console.error('Recovery error:', error)
-   }
+  }
 }
 ```
 

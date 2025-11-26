@@ -1,0 +1,10 @@
+examples/ios/
+examples/android/
+examples/react-native/
+packages/ios/
+packages/android/
+node_modules/
+dist/
+build/
+coverage/
+.yarn/
