@@ -1,4 +1,4 @@
-# Unforgettable iOS Recovery Example
+# Unforgettable iOS Example
 
 A complete iOS/macOS example app demonstrating how to use the Unforgettable SDK for account recovery with WebView integration and automatic polling.
 
@@ -23,7 +23,7 @@ A complete iOS/macOS example app demonstrating how to use the Unforgettable SDK 
 
 1. Open the project in Xcode:
    ```bash
-   cd examples/ios-recovery
+   cd examples/ios
    open UnforgettableExample.xcodeproj
    ```
 

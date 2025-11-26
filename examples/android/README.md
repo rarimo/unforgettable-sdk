@@ -1,4 +1,4 @@
-# Unforgettable Android Recovery Example
+# Unforgettable Android Example
 
 A complete Android example app demonstrating how to use the Unforgettable SDK for account recovery with WebView integration and automatic polling.
 
@@ -24,7 +24,7 @@ A complete Android example app demonstrating how to use the Unforgettable SDK fo
 
 1. Open the project in Android Studio:
    ```bash
-   cd examples/android-recovery
+   cd examples/android
    ```
 
 2. Open the folder in Android Studio
