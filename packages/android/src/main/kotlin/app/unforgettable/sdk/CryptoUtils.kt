@@ -8,6 +8,13 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+// Cryptographic constants
+private const val X25519_PUBLIC_KEY_SIZE = 32 // bytes
+private const val CHACHA20_NONCE_SIZE = 12 // bytes (96 bits)
+private const val POLY1305_TAG_SIZE = 16 // bytes (128 bits)
+private const val HKDF_KEY_SIZE = 32 // bytes (256 bits)
+private const val MIN_ENCRYPTED_SIZE = X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE + POLY1305_TAG_SIZE
+
 sealed class CryptoError : Exception() {
     object KeyGenerationFailed : CryptoError()
     object EncryptionFailed : CryptoError()
@@ -26,13 +33,13 @@ class DataTransferKeyPair(
         return try {
             val combined = base64URLDecode(encryptedData)
             
-            if (combined.size < 32 + 12 + 16) {
+            if (combined.size < MIN_ENCRYPTED_SIZE) {
                 throw CryptoError.InvalidCiphertext
             }
             
-            val ephemeralPublicKey = combined.sliceArray(0 until 32)
-            val nonce = combined.sliceArray(32 until 44)
-            val ciphertext = combined.sliceArray(44 until combined.size)
+            val ephemeralPublicKey = combined.sliceArray(0 until X25519_PUBLIC_KEY_SIZE)
+            val nonce = combined.sliceArray(X25519_PUBLIC_KEY_SIZE until X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE)
+            val ciphertext = combined.sliceArray(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE until combined.size)
             
             val sharedSecret = X25519.computeSharedSecret(privateKey, ephemeralPublicKey)
             val encryptionKey = deriveEncryptionKey(sharedSecret)
@@ -66,7 +73,7 @@ fun generateDataTransferKeyPair(): DataTransferKeyPair {
 fun encryptDataTransferData(publicKey: String, data: String): String {
     return try {
         val recipientPublicKey = base64URLDecode(publicKey)
-        if (recipientPublicKey.size != 32) {
+        if (recipientPublicKey.size != X25519_PUBLIC_KEY_SIZE) {
             throw CryptoError.InvalidPublicKey
         }
         
@@ -76,16 +83,16 @@ fun encryptDataTransferData(publicKey: String, data: String): String {
         val sharedSecret = X25519.computeSharedSecret(ephemeralPrivateKey, recipientPublicKey)
         val encryptionKey = deriveEncryptionKey(sharedSecret)
         
-        val nonce = ByteArray(12)
+        val nonce = ByteArray(CHACHA20_NONCE_SIZE)
         SecureRandom().nextBytes(nonce)
         
         val dataBytes = data.toByteArray(Charsets.UTF_8)
         val encrypted = encryptChaCha20Poly1305(encryptionKey, nonce, dataBytes)
         
-        val combined = ByteArray(32 + 12 + encrypted.size)
-        System.arraycopy(ephemeralPublicKey, 0, combined, 0, 32)
-        System.arraycopy(nonce, 0, combined, 32, 12)
-        System.arraycopy(encrypted, 0, combined, 44, encrypted.size)
+        val combined = ByteArray(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE + encrypted.size)
+        System.arraycopy(ephemeralPublicKey, 0, combined, 0, X25519_PUBLIC_KEY_SIZE)
+        System.arraycopy(nonce, 0, combined, X25519_PUBLIC_KEY_SIZE, CHACHA20_NONCE_SIZE)
+        System.arraycopy(encrypted, 0, combined, X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE, encrypted.size)
         
         base64URLEncode(combined)
     } catch (e: Exception) {
@@ -111,7 +118,7 @@ private fun decryptChaCha20Poly1305(key: ByteArray, nonce: ByteArray, ciphertext
 
 private fun deriveEncryptionKey(sharedSecret: ByteArray, info: String = "unforgettable-encryption"): ByteArray {
     val infoBytes = info.toByteArray(Charsets.UTF_8)
-    return Hkdf.computeHkdf("HmacSha256", sharedSecret, null, infoBytes, 32)
+    return Hkdf.computeHkdf("HmacSha256", sharedSecret, null, infoBytes, HKDF_KEY_SIZE)
 }
 
 private fun base64URLEncode(data: ByteArray): String {

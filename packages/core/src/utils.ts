@@ -3,6 +3,11 @@ import { x25519 } from '@noble/curves/ed25519.js'
 import { hkdf } from '@noble/hashes/hkdf.js'
 import { sha256 } from '@noble/hashes/sha2.js'
 
+// Cryptographic constants
+const X25519_PUBLIC_KEY_SIZE = 32 // bytes
+const CHACHA20_NONCE_SIZE = 12 // bytes (96 bits)
+const HKDF_KEY_SIZE = 32 // bytes (256 bits)
+
 export interface DataTransferKeyPair {
   publicKey: string
   decrypt(encryptedData: string): string
@@ -10,16 +15,19 @@ export interface DataTransferKeyPair {
 
 export function generateDataTransferKeyPair(): Promise<DataTransferKeyPair> {
   return Promise.resolve().then(() => {
-    const privateKey = randomBytes(32)
+    const privateKey = randomBytes(X25519_PUBLIC_KEY_SIZE)
     const publicKey = x25519.getPublicKey(privateKey)
 
     return {
       publicKey: bytesToBase64Url(publicKey),
       decrypt: (encryptedData: string) => {
         const combined = base64UrlToBytes(encryptedData)
-        const ephemeralPublicKey = combined.slice(0, 32)
-        const nonce = combined.slice(32, 44)
-        const encrypted = combined.slice(44)
+        const ephemeralPublicKey = combined.slice(0, X25519_PUBLIC_KEY_SIZE)
+        const nonce = combined.slice(
+          X25519_PUBLIC_KEY_SIZE,
+          X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE,
+        )
+        const encrypted = combined.slice(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE)
 
         const sharedSecret = x25519.getSharedSecret(privateKey, ephemeralPublicKey)
         const encryptionKey = deriveEncryptionKey(sharedSecret)
@@ -35,21 +43,21 @@ export function generateDataTransferKeyPair(): Promise<DataTransferKeyPair> {
 
 export function encryptDataTransferData(publicKey: string, data: string): string {
   const recipientPublicKey = base64UrlToBytes(publicKey)
-  const ephemeralPrivateKey = randomBytes(32)
+  const ephemeralPrivateKey = randomBytes(X25519_PUBLIC_KEY_SIZE)
   const ephemeralPublicKey = x25519.getPublicKey(ephemeralPrivateKey)
 
   const sharedSecret = x25519.getSharedSecret(ephemeralPrivateKey, recipientPublicKey)
   const encryptionKey = deriveEncryptionKey(sharedSecret)
-  const nonce = randomBytes(12)
+  const nonce = randomBytes(CHACHA20_NONCE_SIZE)
 
   const cipher = chacha20poly1305(encryptionKey, nonce)
   const dataBytes = stringToBytes(data)
   const encrypted = cipher.encrypt(dataBytes)
 
-  const combined = new Uint8Array(32 + 12 + encrypted.length)
+  const combined = new Uint8Array(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE + encrypted.length)
   combined.set(ephemeralPublicKey, 0)
-  combined.set(nonce, 32)
-  combined.set(encrypted, 44)
+  combined.set(nonce, X25519_PUBLIC_KEY_SIZE)
+  combined.set(encrypted, X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE)
 
   return bytesToBase64Url(combined)
 }
@@ -66,7 +74,7 @@ function deriveEncryptionKey(
   info: string = 'unforgettable-encryption',
 ): Uint8Array {
   const infoBytes = stringToBytes(info)
-  return hkdf(sha256, sharedSecret, undefined, infoBytes, 32)
+  return hkdf(sha256, sharedSecret, undefined, infoBytes, HKDF_KEY_SIZE)
 }
 
 function bytesToBase64Url(bytes: Uint8Array): string {

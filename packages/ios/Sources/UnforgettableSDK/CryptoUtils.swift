@@ -1,6 +1,13 @@
 import Foundation
 import CryptoKit
 
+// Cryptographic constants
+private let x25519PublicKeySize = 32 // bytes
+private let chacha20NonceSize = 12 // bytes (96 bits)
+private let poly1305TagSize = 16 // bytes (128 bits)
+private let hkdfKeySize = 32 // bytes (256 bits)
+private let minEncryptedSize = x25519PublicKeySize + chacha20NonceSize + poly1305TagSize
+
 public enum CryptoError: Error {
     case keyGenerationFailed
     case encryptionFailed
@@ -23,13 +30,13 @@ public struct DataTransferKeyPair {
     public func decrypt(_ encryptedData: String) throws -> String {
         let combined = try base64URLDecode(encryptedData)
         
-        guard combined.count >= 32 + 12 + 16 else {
+        guard combined.count >= minEncryptedSize else {
             throw CryptoError.invalidCiphertext
         }
         
-        let ephemeralPublicKeyData = combined.prefix(32)
-        let nonce = combined.dropFirst(32).prefix(12)
-        let ciphertext = combined.dropFirst(44)
+        let ephemeralPublicKeyData = combined.prefix(x25519PublicKeySize)
+        let nonce = combined.dropFirst(x25519PublicKeySize).prefix(chacha20NonceSize)
+        let ciphertext = combined.dropFirst(x25519PublicKeySize + chacha20NonceSize)
         
         let ephemeralPublicKey = try Curve25519.KeyAgreement.PublicKey(rawRepresentation: ephemeralPublicKeyData)
         let sharedSecret = try privateKey.sharedSecretFromKeyAgreement(with: ephemeralPublicKey)
@@ -69,7 +76,7 @@ public func generateDataTransferKeyPair() throws -> DataTransferKeyPair {
 
 public func encryptDataTransferData(publicKey: String, data: String) throws -> String {
     let recipientPublicKeyData = try base64URLDecode(publicKey)
-    guard recipientPublicKeyData.count == 32 else {
+    guard recipientPublicKeyData.count == x25519PublicKeySize else {
         throw CryptoError.invalidPublicKey
     }
     
@@ -81,9 +88,9 @@ public func encryptDataTransferData(publicKey: String, data: String) throws -> S
     let sharedSecret = try ephemeralPrivateKey.sharedSecretFromKeyAgreement(with: recipientPublicKey)
     let encryptionKey = try deriveEncryptionKey(sharedSecret: sharedSecret)
     
-    var nonceBytes = Data(count: 12)
+    var nonceBytes = Data(count: chacha20NonceSize)
     let result = nonceBytes.withUnsafeMutableBytes { buffer in
-        SecRandomCopyBytes(kSecRandomDefault, 12, buffer.baseAddress!)
+        SecRandomCopyBytes(kSecRandomDefault, chacha20NonceSize, buffer.baseAddress!)
     }
     guard result == errSecSuccess else {
         throw CryptoError.encryptionFailed
@@ -112,7 +119,7 @@ private func deriveEncryptionKey(sharedSecret: SharedSecret, info: String = "unf
         using: SHA256.self,
         salt: Data(),
         sharedInfo: infoData,
-        outputByteCount: 32
+        outputByteCount: hkdfKeySize
     )
 }
 
