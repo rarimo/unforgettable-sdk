@@ -42,7 +42,7 @@ public struct DataTransferKeyPair {
         let nonce = combined.dropFirst(x25519PublicKeySize).prefix(chacha20NonceSize)
         
         // Extract ciphertext with authentication tag (bytes 44+)
-        let ciphertext = combined.dropFirst(x25519PublicKeySize + chacha20NonceSize)
+        let ciphertextWithTag = combined.dropFirst(x25519PublicKeySize + chacha20NonceSize)
         
         // Perform X25519 key exchange: our private key + their ephemeral public key = shared secret
         let ephemeralPublicKey = try Curve25519.KeyAgreement.PublicKey(rawRepresentation: ephemeralPublicKeyData)
@@ -53,8 +53,8 @@ public struct DataTransferKeyPair {
         
         let sealedBox = try ChaChaPoly.SealedBox(
             nonce: ChaChaPoly.Nonce(data: nonce),
-            ciphertext: ciphertext.dropLast(16),
-            tag: ciphertext.suffix(16)
+            ciphertext: ciphertextWithTag.dropLast(poly1305TagSize),
+            tag: ciphertextWithTag.suffix(poly1305TagSize)
         )
         
         let decryptedData = try ChaChaPoly.open(sealedBox, using: encryptionKey)

@@ -57,15 +57,28 @@ npm start
 
 ## Usage
 
-1. **Select Mode**: Choose between "Create" (new recovery) or "Restore" (recover existing key)
-2. **Choose Factors**: Select one or more recovery factors
-3. **Optional Settings**: 
-   - For Restore mode: Enter wallet address to verify
-   - Enter group identifier if using grouped recovery
-4. **Generate URL**: Tap "Generate Recovery URL"
-5. **Open WebView**: Tap "Open in WebView" to start the recovery process
-6. **Wait for Completion**: The app automatically polls for recovery completion
-7. **View Results**: Once complete, the private key and Ethereum address are displayed
+### Creating a Recovery
+
+1. Select **Create** mode
+2. Choose recovery factors (e.g., Face + Password)
+3. Optionally enter a group
+4. Tap **Generate Recovery URL**
+5. Tap **Open in WebView** to complete the recovery setup
+6. The URL will open in an embedded browser
+7. Follow the on-screen instructions to set up recovery
+8. The app will automatically poll for the recovery data
+
+### Restoring an Account
+
+1. Select **Restore** mode
+2. Choose the same recovery factors used during creation
+3. Optionally enter the wallet address or group
+4. Tap **Generate Recovery URL**
+5. Tap **Open in WebView**
+6. Complete the recovery challenges in the browser
+7. The app will automatically poll for the recovery data
+8. Once complete, the decrypted private key will be displayed
+9. Tap **Copy Key** to copy it to clipboard
 
 ## Architecture
 
@@ -215,13 +228,11 @@ global.Buffer = Buffer
 ⚠️ **This is an example app for demonstration purposes.**
 
 In production:
-- Never log private keys to console
+- Never log or display private keys in plaintext
 - Use React Native Keychain or Secure Storage for sensitive data
-- Implement proper authentication before displaying keys
-- Add biometric authentication (Face ID/Touch ID)
-- Use HTTPS for all network communications
-- Implement proper error handling and user feedback
-- Add rate limiting for polling
+- Implement proper error handling
+- Add authentication before displaying keys
+- Consider using biometric authentication
 
 ## Known Limitations
 

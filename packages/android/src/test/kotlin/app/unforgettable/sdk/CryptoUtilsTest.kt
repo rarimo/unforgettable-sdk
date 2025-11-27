@@ -12,9 +12,7 @@ class CryptoUtilsTest {
         val keyPair = generateDataTransferKeyPair()
         
         assertTrue(keyPair.publicKey.isNotEmpty())
-        assertTrue(!keyPair.publicKey.contains("+"))
-        assertTrue(!keyPair.publicKey.contains("/"))
-        assertTrue(!keyPair.publicKey.contains("="))
+        assertTrue(keyPair.publicKey.matches(Regex("^[A-Za-z0-9_-]+$")))
     }
     
     @Test

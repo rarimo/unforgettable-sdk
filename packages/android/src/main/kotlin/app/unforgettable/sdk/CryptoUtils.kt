@@ -45,7 +45,7 @@ class DataTransferKeyPair(
             val nonce = combined.sliceArray(X25519_PUBLIC_KEY_SIZE until X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE)
             
             // Extract ciphertext with authentication tag (bytes 44+)
-            val ciphertext = combined.sliceArray(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE until combined.size)
+            val ciphertextWithTag = combined.sliceArray(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE until combined.size)
             
             // Perform X25519 key exchange: our private key + their ephemeral public key = shared secret
             val sharedSecret = X25519.computeSharedSecret(privateKey, ephemeralPublicKey)
@@ -53,7 +53,7 @@ class DataTransferKeyPair(
             // Derive the actual encryption key from shared secret using HKDF
             val encryptionKey = deriveEncryptionKey(sharedSecret)
             
-            val decryptedBytes = decryptChaCha20Poly1305(encryptionKey, nonce, ciphertext)
+            val decryptedBytes = decryptChaCha20Poly1305(encryptionKey, nonce, ciphertextWithTag)
             
             String(decryptedBytes, Charsets.UTF_8)
         } catch (e: Exception) {
@@ -96,13 +96,13 @@ fun encryptDataTransferData(publicKey: String, data: String): String {
         SecureRandom().nextBytes(nonce)
         
         val dataBytes = data.toByteArray(Charsets.UTF_8)
-        val encrypted = encryptChaCha20Poly1305(encryptionKey, nonce, dataBytes) // Includes 16-byte Poly1305 authentication tag
+        val ciphertextWithTag = encryptChaCha20Poly1305(encryptionKey, nonce, dataBytes) // Includes 16-byte Poly1305 authentication tag
         
         // Build encrypted data format: [32 bytes ephemeral public key][12 bytes nonce][ciphertext + 16 bytes auth tag]
-        val combined = ByteArray(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE + encrypted.size)
+        val combined = ByteArray(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE + ciphertextWithTag.size)
         System.arraycopy(ephemeralPublicKey, 0, combined, 0, X25519_PUBLIC_KEY_SIZE) // Bytes 0-31: ephemeral public key
         System.arraycopy(nonce, 0, combined, X25519_PUBLIC_KEY_SIZE, CHACHA20_NONCE_SIZE) // Bytes 32-43: nonce
-        System.arraycopy(encrypted, 0, combined, X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE, encrypted.size) // Bytes 44+: ciphertext + tag
+        System.arraycopy(ciphertextWithTag, 0, combined, X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE, ciphertextWithTag.size) // Bytes 44+: ciphertext + tag
         
         base64URLEncode(combined)
     } catch (e: Exception) {
