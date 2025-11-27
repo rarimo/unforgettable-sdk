@@ -13,32 +13,41 @@ export interface DataTransferKeyPair {
   decrypt(encryptedData: string): string
 }
 
-export function generateDataTransferKeyPair(): Promise<DataTransferKeyPair> {
-  return Promise.resolve().then(() => {
-    const privateKey = randomBytes(X25519_PUBLIC_KEY_SIZE)
-    const publicKey = x25519.getPublicKey(privateKey)
+export async function generateDataTransferKeyPair(): Promise<DataTransferKeyPair> {
+  const privateKey = randomBytes(X25519_PUBLIC_KEY_SIZE)
+  const publicKey = x25519.getPublicKey(privateKey)
 
-    return {
-      publicKey: bytesToBase64Url(publicKey),
-      decrypt: (encryptedData: string) => {
-        const combined = base64UrlToBytes(encryptedData)
-        const ephemeralPublicKey = combined.slice(0, X25519_PUBLIC_KEY_SIZE)
-        const nonce = combined.slice(
-          X25519_PUBLIC_KEY_SIZE,
-          X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE,
-        )
-        const encrypted = combined.slice(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE)
+  return {
+    publicKey: bytesToBase64Url(publicKey),
+    decrypt: (encryptedData: string) => {
+      // Encrypted data format:
+      // [32 bytes ephemeral public key][12 bytes nonce][ciphertext + 16 bytes auth tag]
+      const combined = base64UrlToBytes(encryptedData)
 
-        const sharedSecret = x25519.getSharedSecret(privateKey, ephemeralPublicKey)
-        const encryptionKey = deriveEncryptionKey(sharedSecret)
+      // Extract ephemeral public key (bytes 0-31)
+      const ephemeralPublicKey = combined.slice(0, X25519_PUBLIC_KEY_SIZE)
 
-        const cipher = chacha20poly1305(encryptionKey, nonce)
-        const decrypted = cipher.decrypt(encrypted)
+      // Extract nonce (bytes 32-43)
+      const nonce = combined.slice(
+        X25519_PUBLIC_KEY_SIZE,
+        X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE,
+      )
 
-        return bytesToString(decrypted)
-      },
-    }
-  })
+      // Extract ciphertext with authentication tag (bytes 44+)
+      const encrypted = combined.slice(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE)
+
+      // Perform X25519 key exchange: our private key + their ephemeral public key = shared secret
+      const sharedSecret = x25519.getSharedSecret(privateKey, ephemeralPublicKey)
+
+      // Derive the actual encryption key from shared secret using HKDF
+      const encryptionKey = deriveEncryptionKey(sharedSecret)
+
+      const cipher = chacha20poly1305(encryptionKey, nonce)
+      const decrypted = cipher.decrypt(encrypted)
+
+      return bytesToString(decrypted)
+    },
+  }
 }
 
 export function encryptDataTransferData(publicKey: string, data: string): string {
@@ -52,11 +61,16 @@ export function encryptDataTransferData(publicKey: string, data: string): string
 
   const cipher = chacha20poly1305(encryptionKey, nonce)
   const dataBytes = stringToBytes(data)
-  const encrypted = cipher.encrypt(dataBytes)
+  const encrypted = cipher.encrypt(dataBytes) // Includes 16-byte Poly1305 authentication tag
 
+  // Build encrypted data format:
+  // [32 bytes ephemeral public key][12 bytes nonce][ciphertext + 16 bytes auth tag]
   const combined = new Uint8Array(X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE + encrypted.length)
+  // Bytes 0-31: ephemeral public key
   combined.set(ephemeralPublicKey, 0)
+  // Bytes 32-43: nonce
   combined.set(nonce, X25519_PUBLIC_KEY_SIZE)
+  // Bytes 44+: ciphertext + tag
   combined.set(encrypted, X25519_PUBLIC_KEY_SIZE + CHACHA20_NONCE_SIZE)
 
   return bytesToBase64Url(combined)

@@ -79,7 +79,7 @@ app/src/main/kotlin/app/unforgettable/example/
 ```kotlin
 val options = UnforgettableSdkOptions(
     mode = UnforgettableMode.RESTORE,
-    factors = listOf(RecoveryFactor.FACE, RecoveryFactor.PASSWORD),
+    factors = listOf(RecoveryFactor.FACE, RecoveryFactor.IMAGE, RecoveryFactor.PASSWORD),
     walletAddress = "0x123...",
     group = "my-group"
 )

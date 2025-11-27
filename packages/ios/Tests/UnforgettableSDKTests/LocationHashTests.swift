@@ -7,7 +7,7 @@ final class LocationHashTests: XCTestCase {
         let params = UnforgettablePathParams(
             dataTransferId: "test-id-123",
             encryptionPublicKey: "test-key",
-            factors: [.face, .password],
+            factors: [.face, .image, .password],
             walletAddress: "0x123"
         )
         

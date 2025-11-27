@@ -28,18 +28,27 @@ public struct DataTransferKeyPair {
     }
     
     public func decrypt(_ encryptedData: String) throws -> String {
+        // Encrypted data format: [32 bytes ephemeral public key][12 bytes nonce][ciphertext + 16 bytes auth tag]
         let combined = try base64URLDecode(encryptedData)
         
         guard combined.count >= minEncryptedSize else {
             throw CryptoError.invalidCiphertext
         }
         
+        // Extract ephemeral public key (bytes 0-31)
         let ephemeralPublicKeyData = combined.prefix(x25519PublicKeySize)
+        
+        // Extract nonce (bytes 32-43)
         let nonce = combined.dropFirst(x25519PublicKeySize).prefix(chacha20NonceSize)
+        
+        // Extract ciphertext with authentication tag (bytes 44+)
         let ciphertext = combined.dropFirst(x25519PublicKeySize + chacha20NonceSize)
         
+        // Perform X25519 key exchange: our private key + their ephemeral public key = shared secret
         let ephemeralPublicKey = try Curve25519.KeyAgreement.PublicKey(rawRepresentation: ephemeralPublicKeyData)
         let sharedSecret = try privateKey.sharedSecretFromKeyAgreement(with: ephemeralPublicKey)
+        
+        // Derive the actual encryption key from shared secret using HKDF
         let encryptionKey = try deriveEncryptionKey(sharedSecret: sharedSecret)
         
         let sealedBox = try ChaChaPoly.SealedBox(
@@ -103,11 +112,12 @@ public func encryptDataTransferData(publicKey: String, data: String) throws -> S
     
     let sealedBox = try ChaChaPoly.seal(dataToEncrypt, using: encryptionKey, nonce: nonce)
     
+    // Build encrypted data format: [32 bytes ephemeral public key][12 bytes nonce][ciphertext + 16 bytes auth tag]
     var combined = Data()
-    combined.append(ephemeralPublicKey.rawRepresentation)
-    combined.append(nonceBytes)
-    combined.append(sealedBox.ciphertext)
-    combined.append(sealedBox.tag)
+    combined.append(ephemeralPublicKey.rawRepresentation) // Bytes 0-31: ephemeral public key
+    combined.append(nonceBytes) // Bytes 32-43: nonce
+    combined.append(sealedBox.ciphertext) // Ciphertext
+    combined.append(sealedBox.tag) // 16-byte Poly1305 authentication tag
     
     return base64URLEncode(combined)
 }

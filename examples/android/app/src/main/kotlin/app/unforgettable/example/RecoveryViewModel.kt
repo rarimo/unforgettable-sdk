@@ -26,7 +26,7 @@ class RecoveryViewModel : ViewModel() {
     private val _mode = MutableStateFlow(UnforgettableMode.CREATE)
     val mode: StateFlow<UnforgettableMode> = _mode.asStateFlow()
     
-    private val _selectedFactors = MutableStateFlow(setOf(RecoveryFactor.FACE, RecoveryFactor.PASSWORD))
+    private val _selectedFactors = MutableStateFlow(setOf(RecoveryFactor.FACE, RecoveryFactor.IMAGE, RecoveryFactor.PASSWORD))
     val selectedFactors: StateFlow<Set<RecoveryFactor>> = _selectedFactors.asStateFlow()
     
     private val _walletAddress = MutableStateFlow("")

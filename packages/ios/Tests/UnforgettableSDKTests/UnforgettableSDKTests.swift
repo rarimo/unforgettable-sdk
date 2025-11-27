@@ -6,7 +6,7 @@ final class UnforgettableSDKTests: XCTestCase {
     func testSDKInitialization() throws {
         let sdk = try UnforgettableSDK(options: UnforgettableSdkOptions(
             mode: .create,
-            factors: [.face, .password],
+            factors: [.face, .image, .password],
             walletAddress: "0x1234567890abcdef"
         ))
         
@@ -32,7 +32,7 @@ final class UnforgettableSDKTests: XCTestCase {
     func testGetRecoveryUrlRestore() throws {
         let sdk = try UnforgettableSDK(options: UnforgettableSdkOptions(
             mode: .restore,
-            factors: [.face, .password],
+            factors: [.face, .image, .password],
             walletAddress: "0xabcdef"
         ))
         

@@ -16,6 +16,7 @@ export default function App() {
   const [group, setGroup] = useState('')
   const [selectedFactors, setSelectedFactors] = useState<RecoveryFactor[]>([
     RecoveryFactor.Face,
+    RecoveryFactor.Image,
     RecoveryFactor.Password,
   ])
 

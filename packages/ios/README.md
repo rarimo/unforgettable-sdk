@@ -29,7 +29,7 @@ import UnforgettableSDK
 do {
     let sdk = try UnforgettableSDK(options: UnforgettableSdkOptions(
         mode: .create,
-        factors: [.face, .password],
+        factors: [.face, .image, .password],
         walletAddress: "0x1234567890abcdef"
     ))
     
@@ -48,7 +48,7 @@ import UnforgettableSDK
 do {
     let sdk = try UnforgettableSDK(options: UnforgettableSdkOptions(
         mode: .restore,
-        factors: [.face, .password]
+        factors: [.face, .image, .password],
     ))
     
     let recoveryUrl = sdk.getRecoveryUrl()

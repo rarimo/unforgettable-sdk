@@ -97,7 +97,7 @@ import { RecoveryFactor } from '@rarimo/unforgettable-sdk'
 
 <UnforgettableQrCode
   mode="create"
-  factors={[RecoveryFactor.Face, RecoveryFactor.Password]}
+  factors={[RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password]}
   group="my-group"
   onSuccess={(key, helperDataUrl) => {
     console.log('Private key:', key)

@@ -75,7 +75,7 @@ UnforgettableExample/
 ```swift
 let options = UnforgettableSdkOptions(
     mode: .restore,
-    factors: [.face, .password],
+    factors: [.face, .image, .password],
     walletAddress: "0x123...",
     group: "my-group"
 )

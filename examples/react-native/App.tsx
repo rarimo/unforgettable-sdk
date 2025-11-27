@@ -33,6 +33,7 @@ function App(): React.JSX.Element {
   const [mode, setMode] = useState<UnforgettableMode>('create')
   const [selectedFactors, setSelectedFactors] = useState<RecoveryFactor[]>([
     RecoveryFactor.Face,
+    RecoveryFactor.Image,
     RecoveryFactor.Password,
   ])
   const [walletAddress, setWalletAddress] = useState('')

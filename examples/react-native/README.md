@@ -131,7 +131,7 @@ import { UnforgettableSdk, RecoveryFactor } from '@rarimo/unforgettable-sdk'
 
 const sdk = new UnforgettableSdk({
   mode: 'restore',
-  factors: [RecoveryFactor.Face, RecoveryFactor.Password],
+  factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
   walletAddress: '0x123...',
   group: 'my-group'
 })

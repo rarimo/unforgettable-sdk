@@ -4,7 +4,7 @@ import UnforgettableSDK
 @MainActor
 class RecoveryViewModel: ObservableObject {
   @Published var mode: UnforgettableMode = .create
-  @Published var selectedFactors: Set<RecoveryFactor> = [.face, .password]
+  @Published var selectedFactors: Set<RecoveryFactor> = [.face, .image, .password]
   @Published var walletAddress: String = ""
   @Published var group: String = ""
     
