@@ -68,9 +68,6 @@ class UnforgettableSDKTest {
         assertEquals(RecoveryFactor.FACE, RecoveryFactor.fromValue(1))
         assertEquals(RecoveryFactor.IMAGE, RecoveryFactor.fromValue(2))
         assertEquals(RecoveryFactor.PASSWORD, RecoveryFactor.fromValue(3))
-        assertEquals(RecoveryFactor.OBJECT, RecoveryFactor.fromValue(4))
-        assertEquals(RecoveryFactor.BOOK, RecoveryFactor.fromValue(5))
-        assertEquals(RecoveryFactor.GEOLOCATION, RecoveryFactor.fromValue(6))
         assertEquals(null, RecoveryFactor.fromValue(99))
     }
 }

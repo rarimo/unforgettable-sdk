@@ -11,9 +11,6 @@ public enum RecoveryFactor: Int, CaseIterable, Codable {
     case face = 1
     case image = 2
     case password = 3
-    case object = 4
-    case book = 5
-    case geolocation = 6
 }
 
 /// All available recovery factors

@@ -20,7 +20,7 @@ class RecoveryViewModel: ObservableObject {
   private nonisolated(unsafe) var pollingTask: Task<Void, Never>?
     
   var allFactors: [RecoveryFactor] {
-    [.face, .image, .password]
+    RecoveryFactor.allCases
   }
     
   func generateRecoveryUrl() {

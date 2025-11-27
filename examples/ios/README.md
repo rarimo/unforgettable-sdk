@@ -5,7 +5,7 @@ A complete iOS/macOS example app demonstrating how to use the Unforgettable SDK 
 ## Features
 
 - ✅ Generate recovery URLs for both Create and Restore modes
-- ✅ Select multiple recovery factors (Face, Image, Password, etc.)
+- ✅ Select multiple recovery factors (Face, Image, Password)
 - ✅ Optional wallet address and group parameters
 - ✅ Open recovery URL in an embedded WebView
 - ✅ Automatic polling for recovery data in restore mode

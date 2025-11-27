@@ -5,7 +5,7 @@ A web application demonstrating the Unforgettable SDK React component for secure
 ## Features
 
 - **Mode Selection**: Create new recovery or restore existing keys
-- **Recovery Factors**: Select from 6 different authentication factors (Face, Image, Password, Object, Book, Geolocation)
+- **Recovery Factors**: Select from multiple recovery factors (Face, Image, Password)
 - **QR Code Integration**: Built-in QR code component for easy mobile scanning
 - **Real-time Key Generation**: Instantly displays recovered private key and Ethereum address
 - **Group Support**: Optional group identifier for multi-user scenarios

@@ -92,7 +92,7 @@ class LocationHashTest {
         val originalParams = UnforgettablePathParams(
             dataTransferId = "uuid-123",
             encryptionPublicKey = "public-key-data",
-            factors = listOf(RecoveryFactor.FACE, RecoveryFactor.IMAGE, RecoveryFactor.GEOLOCATION),
+            factors = listOf(RecoveryFactor.FACE, RecoveryFactor.IMAGE, RecoveryFactor.PASSWORD),
             walletAddress = "0x456"
         )
         

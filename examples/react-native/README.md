@@ -5,7 +5,7 @@ A React Native mobile application demonstrating the Unforgettable SDK for secure
 ## Features
 
 - **Mode Selection**: Create new recovery or restore existing keys
-- **Recovery Factors**: Select from 6 different authentication factors (Face, Image, Password, Object, Book, Geolocation)
+- **Recovery Factors**: Select from multiple recovery factors (Face, Image, Password)
 - **Group Support**: Optional group identifier for multi-user scenarios
 - **WebView Integration**: In-app browser for recovery process with camera permissions
 - **Automatic Polling**: Continuously checks for recovery completion (2-second intervals)

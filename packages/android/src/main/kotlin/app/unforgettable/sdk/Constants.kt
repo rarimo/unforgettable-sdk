@@ -16,10 +16,7 @@ const val UNFORGETTABLE_API_URL = "https://api.unforgettable.app"
 enum class RecoveryFactor(val value: Int) {
     FACE(1),
     IMAGE(2),
-    PASSWORD(3),
-    OBJECT(4),
-    BOOK(5),
-    GEOLOCATION(6);
+    PASSWORD(3);
 
     companion object {
         /**

@@ -50,7 +50,7 @@ This component renders a QR code wrapped in an `<a>` tag that links to the ident
 import UnforgettableQrCode from '@rarimo/unforgettable-sdk-react'
 
 // ...
-;<UnforgettableQrCode
+<UnforgettableQrCode
   mode='create'
   qrProps={{ size: 200 }}
   loader={<span>Loading...</span>}
