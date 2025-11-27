@@ -155,6 +155,8 @@ const recoveryUrl = await sdk.getRecoveryUrl()
 ### Polling with Error Handling
 
 ```tsx
+import { NotFoundError } from '@rarimo/unforgettable-sdk'
+
 const pollingInterval = setInterval(async () => {
   try {
     const data = await sdk.getRecoveredData()
@@ -162,7 +164,7 @@ const pollingInterval = setInterval(async () => {
     clearInterval(pollingInterval)
   } catch (error) {
     // Continue polling on 404 (data not ready yet)
-    if (error.httpStatus === 404 || error.name === 'NotFoundError') {
+    if (error instanceof NotFoundError) {
       return
     }
     // Stop on other errors

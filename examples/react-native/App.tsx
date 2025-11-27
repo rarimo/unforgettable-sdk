@@ -5,7 +5,12 @@ import 'fastestsmallesttextencoderdecoder'
 import { Buffer } from 'buffer'
 global.Buffer = Buffer
 
-import { RecoveryFactor, UnforgettableMode, UnforgettableSdk } from '@rarimo/unforgettable-sdk'
+import {
+  NotFoundError,
+  RecoveryFactor,
+  UnforgettableMode,
+  UnforgettableSdk,
+} from '@rarimo/unforgettable-sdk'
 import React, { useEffect, useState } from 'react'
 import {
   Clipboard,
@@ -60,15 +65,13 @@ function App(): React.JSX.Element {
           setIsPolling(false)
           setShowWebView(false)
         } catch (error) {
-          const errorObj = error as { httpStatus?: number; name?: string; message?: string }
-          // Check if it's a 404 error (data not found yet)
-          if (errorObj.httpStatus === 404 || errorObj.name === 'NotFoundError') {
-            // Continue polling
+          // Continue polling if data not ready yet
+          if (error instanceof NotFoundError) {
             return
           }
           // Other errors - stop polling
           console.error('Recovery error:', error)
-          setErrorMessage(`Recovery failed: ${errorObj.message || 'Unknown error'}`)
+          setErrorMessage(`Recovery failed: ${(error as Error).message || 'Unknown error'}`)
           setIsPolling(false)
           setShowWebView(false)
         }

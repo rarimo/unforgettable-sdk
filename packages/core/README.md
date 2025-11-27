@@ -50,13 +50,15 @@ console.log('Recovery URL:', recoveryUrl)
 3. Get the recovered key and helper data URL:
 
 ```ts
+import { NotFoundError } from '@rarimo/unforgettable-sdk'
+
 try {
   const recoveryKey = await sdk.getRecoveredKey()
   // This is the recovered Unforgettable private key.
   // You can now create a wallet with it.
   console.log('Recovered key:', recoveryKey)
 } catch (error) {
-  if (error?.httpStatus === 404) {
+  if (error instanceof NotFoundError) {
     // No recovery data found yet, try again later
   } else {
     console.error('Recovery error:', error)
@@ -92,11 +94,13 @@ console.log('Recovery URL:', recoveryUrl)
 3. Get the recovered key:
 
 ```ts
+import { NotFoundError } from '@rarimo/unforgettable-sdk'
+
 try {
   const recoveryKey = await sdk.getRecoveredKey()
   console.log('Recovered key:', recoveryKey)
 } catch (error) {
-  if (error?.httpStatus === 404) {
+  if (error instanceof NotFoundError) {
     // No recovery data found yet, try again later
   } else {
     console.error('Recovery error:', error)

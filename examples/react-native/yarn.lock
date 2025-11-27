@@ -2152,14 +2152,14 @@ __metadata:
 
 "@rarimo/unforgettable-sdk@file:../../packages/core::locator=react-native-example%40workspace%3A.":
   version: 0.7.0
-  resolution: "@rarimo/unforgettable-sdk@file:../../packages/core#../../packages/core::hash=0951ed&locator=react-native-example%40workspace%3A."
+  resolution: "@rarimo/unforgettable-sdk@file:../../packages/core#../../packages/core::hash=02ace7&locator=react-native-example%40workspace%3A."
   dependencies:
     "@distributedlab/jac": "npm:1.0.0-rc.17"
     "@noble/ciphers": "npm:2.0.1"
     "@noble/curves": "npm:2.0.1"
     "@noble/hashes": "npm:2.0.1"
     uuid: "npm:9.0.1"
-  checksum: 10c0/79c873814e1e6405a9fbb014773da39851ef51735cce1933d621a190c91aae035b69b31483b2e09b0fa62118635ddd25cab4d2701990e443989aa4bc3d6c5e1a
+  checksum: 10c0/87fabb24b83b2b2d48f30e2f14c97d68e20cc576e4c32cbc0ccdd94e917058ea0073be20247720e7bf4f0110eff315d24309255219b4fcac07c7edbfb4e10911
   languageName: node
   linkType: hard
 
