@@ -22,7 +22,7 @@ class CryptoUtilsTest {
         val keyPair = generateDataTransferKeyPair()
         val originalData = "Hello, World!"
         
-        val encrypted = keyPair.encrypt(originalData)
+        val encrypted = encryptDataTransferData(keyPair.publicKey, originalData)
         assertNotEquals(encrypted, originalData)
         
         val decrypted = keyPair.decrypt(encrypted)
@@ -34,7 +34,7 @@ class CryptoUtilsTest {
         val keyPair = generateDataTransferKeyPair()
         val originalData = "A".repeat(100)
         
-        val encrypted = keyPair.encrypt(originalData)
+        val encrypted = encryptDataTransferData(keyPair.publicKey, originalData)
         val decrypted = keyPair.decrypt(encrypted)
         
         assertEquals(originalData, decrypted)

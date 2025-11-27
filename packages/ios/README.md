@@ -30,7 +30,9 @@ do {
     let sdk = try UnforgettableSDK(options: UnforgettableSdkOptions(
         mode: .create,
         factors: [.face, .image, .password],
-        walletAddress: "0x1234567890abcdef"
+        walletAddress: "0x1234567890abcdef",
+        group: "my-organization", // Optional
+        customParams: ["theme": "dark", "lang": "en"] // Optional
     ))
     
     let recoveryUrl = sdk.getRecoveryUrl()
@@ -139,6 +141,8 @@ public struct UnforgettableSdkOptions {
     public let apiUrl: String
     public let factors: [RecoveryFactor]
     public let walletAddress: String?
+    public let group: String?
+    public let customParams: [String: String]?
 }
 ```
 
@@ -148,6 +152,8 @@ public struct UnforgettableSdkOptions {
 - `apiUrl`: The Unforgettable API URL (default: `https://api.unforgettable.app`)
 - `factors`: Array of recovery factors to use
 - `walletAddress`: Optional wallet address to associate with the recovery
+- `group`: Optional group identifier for organizing recovery keys
+- `customParams`: Optional custom URL parameters to pass to the recovery app
 
 ### Error Types
 

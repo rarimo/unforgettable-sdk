@@ -50,7 +50,7 @@ A complete Android example app demonstrating how to use the Unforgettable SDK fo
 
 1. Select **Restore** mode
 2. Choose the same recovery factors used during creation
-3. Optionally enter the wallet address
+3. Optionally enter the wallet address or group
 4. Click **Generate Recovery URL**
 5. Click **Open in WebView**
 6. Complete the recovery challenges in the browser

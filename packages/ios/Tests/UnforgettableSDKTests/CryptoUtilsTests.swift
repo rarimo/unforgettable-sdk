@@ -16,7 +16,7 @@ final class CryptoUtilsTests: XCTestCase {
         let keyPair = try generateDataTransferKeyPair()
         let originalData = "Hello, World!"
         
-        let encrypted = try keyPair.encrypt(originalData)
+        let encrypted = try encryptDataTransferData(publicKey: keyPair.publicKey, data: originalData)
         XCTAssertNotEqual(encrypted, originalData)
         
         let decrypted = try keyPair.decrypt(encrypted)
@@ -27,7 +27,7 @@ final class CryptoUtilsTests: XCTestCase {
         let keyPair = try generateDataTransferKeyPair()
         let originalData = String(repeating: "A", count: 100)
         
-        let encrypted = try keyPair.encrypt(originalData)
+        let encrypted = try encryptDataTransferData(publicKey: keyPair.publicKey, data: originalData)
         let decrypted = try keyPair.decrypt(encrypted)
         
         XCTAssertEqual(decrypted, originalData)

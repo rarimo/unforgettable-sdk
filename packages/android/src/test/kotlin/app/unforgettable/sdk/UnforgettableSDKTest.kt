@@ -59,8 +59,8 @@ class UnforgettableSDKTest {
     
     @Test
     fun `test recovery factor all cases`() {
-        assertEquals(6, RecoveryFactor.values().size)
-        assertEquals(6, RecoveryFactor.ALL_RECOVERY_FACTORS.size)
+        assertEquals(3, RecoveryFactor.values().size)
+        assertEquals(3, RecoveryFactor.ALL_RECOVERY_FACTORS.size)
     }
     
     @Test
@@ -69,5 +69,79 @@ class UnforgettableSDKTest {
         assertEquals(RecoveryFactor.IMAGE, RecoveryFactor.fromValue(2))
         assertEquals(RecoveryFactor.PASSWORD, RecoveryFactor.fromValue(3))
         assertEquals(null, RecoveryFactor.fromValue(99))
+    }
+    
+    @Test
+    fun `test SDK with group`() {
+        val sdk = UnforgettableSDK(
+            options = UnforgettableSdkOptions(
+                mode = UnforgettableMode.CREATE,
+                factors = listOf(RecoveryFactor.FACE),
+                group = "test-group"
+            )
+        )
+        
+        assertEquals("test-group", sdk.group)
+    }
+    
+    @Test
+    fun `test SDK with custom params`() {
+        val customParams = mapOf("t" to "dark", "d" to "data")
+        val sdk = UnforgettableSDK(
+            options = UnforgettableSdkOptions(
+                mode = UnforgettableMode.CREATE,
+                factors = listOf(RecoveryFactor.FACE),
+                customParams = customParams
+            )
+        )
+        
+        assertEquals("dark", sdk.customParams?.get("t"))
+        assertEquals("data", sdk.customParams?.get("d"))
+    }
+    
+    @Test
+    fun `test get recovery url with group`() {
+        val sdk = UnforgettableSDK(
+            options = UnforgettableSdkOptions(
+                mode = UnforgettableMode.CREATE,
+                factors = listOf(RecoveryFactor.FACE),
+                group = "my-group"
+            )
+        )
+        
+        val url = sdk.getRecoveryUrl()
+        
+        assertTrue(url.contains("g=my-group"))
+    }
+    
+    @Test
+    fun `test get recovery url with custom params`() {
+        val sdk = UnforgettableSDK(
+            options = UnforgettableSdkOptions(
+                mode = UnforgettableMode.CREATE,
+                factors = listOf(RecoveryFactor.FACE),
+                customParams = mapOf("t" to "light", "d" to "test")
+            )
+        )
+        
+        val url = sdk.getRecoveryUrl()
+        
+        assertTrue(url.contains("t=light"))
+        assertTrue(url.contains("d=test"))
+    }
+    
+    @Test
+    fun `test get recovery url with custom app url`() {
+        val sdk = UnforgettableSDK(
+            options = UnforgettableSdkOptions(
+                mode = UnforgettableMode.CREATE,
+                factors = listOf(RecoveryFactor.FACE),
+                appUrl = "https://custom.app"
+            )
+        )
+        
+        val url = sdk.getRecoveryUrl()
+        
+        assertTrue(url.startsWith("https://custom.app/c#"))
     }
 }

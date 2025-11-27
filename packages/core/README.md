@@ -28,6 +28,13 @@ const sdk = new UnforgettableSdk({
   apiUrl: 'https://api.custom.app',
   // Factors to use for recovery. If not provided, the user will select them during the recovery process.
   factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
+  // Optional, group identifier for organizing recovery keys
+  group: 'my-organization',
+  // Optional, custom URL parameters to pass to the recovery app
+  customParams: {
+    theme: 'dark',
+    lang: 'en',
+  },
 })
 ```
 
@@ -70,6 +77,8 @@ const sdk = new UnforgettableSdk({
   appUrl: 'https://custom.app', // Optional
   apiUrl: 'https://api.custom.app', // Optional
   factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password], // Optional
+  group: 'my-organization', // Optional
+  customParams: { theme: 'dark' }, // Optional
 })
 ```
 

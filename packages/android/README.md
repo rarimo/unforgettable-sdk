@@ -43,7 +43,9 @@ val sdk = UnforgettableSDK(
     UnforgettableSdkOptions(
         mode = UnforgettableMode.CREATE,
         factors = listOf(RecoveryFactor.FACE, RecoveryFactor.IMAGE, RecoveryFactor.PASSWORD),
-        walletAddress = "0x1234567890abcdef"
+        walletAddress = "0x1234567890abcdef",
+        group = "my-organization", // Optional
+        customParams = mapOf("theme" to "dark", "lang" to "en") // Optional
     )
 )
 
@@ -152,7 +154,9 @@ data class UnforgettableSdkOptions(
     val appUrl: String = UNFORGETTABLE_APP_URL,
     val apiUrl: String = UNFORGETTABLE_API_URL,
     val factors: List<RecoveryFactor> = emptyList(),
-    val walletAddress: String? = null
+    val walletAddress: String? = null,
+    val group: String? = null,
+    val customParams: Map<String, String>? = null
 )
 ```
 
@@ -162,6 +166,8 @@ data class UnforgettableSdkOptions(
 - `apiUrl`: The Unforgettable API URL (default: `https://api.unforgettable.app`)
 - `factors`: List of recovery factors to use
 - `walletAddress`: Optional wallet address to associate with the recovery
+- `group`: Optional group identifier for organizing recovery keys
+- `customParams`: Optional custom URL parameters to pass to the recovery app
 
 ### Error Types
 

@@ -59,14 +59,14 @@ class LocationHashTest {
     
     @Test
     fun `test parse location hash without hash prefix`() {
-        val hash = "id=test&epk=key&f=4"
+        val hash = "id=test&epk=key&f=1"
         
         val params = parseUnforgettableLocationHash(hash)
         
         assertEquals("test", params.dataTransferId)
         assertEquals("key", params.encryptionPublicKey)
         assertEquals(1, params.factors.size)
-        assertEquals(RecoveryFactor.OBJECT, params.factors[0])
+        assertEquals(RecoveryFactor.FACE, params.factors[0])
     }
     
     @Test
@@ -103,5 +103,95 @@ class LocationHashTest {
         assertEquals(originalParams.encryptionPublicKey, parsedParams.encryptionPublicKey)
         assertEquals(originalParams.factors, parsedParams.factors)
         assertEquals(originalParams.walletAddress, parsedParams.walletAddress)
+    }
+    
+    @Test
+    fun `test compose location hash with group`() {
+        val params = UnforgettablePathParams(
+            dataTransferId = "test-id",
+            encryptionPublicKey = "key",
+            factors = listOf(RecoveryFactor.FACE),
+            group = "test-group"
+        )
+        
+        val hash = composeUnforgettableLocationHash(params)
+        
+        assertTrue(hash.contains("g=test-group"))
+    }
+    
+    @Test
+    fun `test parse location hash with group`() {
+        val hash = "#id=test&epk=key&f=1&g=my-group"
+        
+        val params = parseUnforgettableLocationHash(hash)
+        
+        assertEquals("my-group", params.group)
+    }
+    
+    @Test
+    fun `test compose location hash with custom params`() {
+        val params = UnforgettablePathParams(
+            dataTransferId = "test-id",
+            encryptionPublicKey = "key",
+            factors = listOf(RecoveryFactor.FACE),
+            customParams = mapOf("t" to "dark", "d" to "data")
+        )
+        
+        val hash = composeUnforgettableLocationHash(params)
+        
+        assertTrue(hash.contains("t=dark"))
+        assertTrue(hash.contains("d=data"))
+    }
+    
+    @Test
+    fun `test parse location hash with custom params`() {
+        val hash = "#id=test&epk=key&f=1&t=light&d=test-data"
+        
+        val params = parseUnforgettableLocationHash(hash)
+        
+        assertEquals("light", params.customParams?.get("t"))
+        assertEquals("test-data", params.customParams?.get("d"))
+    }
+    
+    @Test
+    fun `test parse location hash empty factors`() {
+        val hash = "#id=test&epk=key&f="
+        
+        val params = parseUnforgettableLocationHash(hash)
+        
+        assertEquals(0, params.factors.size)
+    }
+    
+    @Test
+    fun `test parse location hash ignores empty factor items`() {
+        val hash = "#id=test&epk=key&f=1,,2,,3"
+        
+        val params = parseUnforgettableLocationHash(hash)
+        
+        assertEquals(3, params.factors.size)
+        assertEquals(listOf(RecoveryFactor.FACE, RecoveryFactor.IMAGE, RecoveryFactor.PASSWORD), params.factors)
+    }
+    
+    @Test
+    fun `test round trip with all params`() {
+        val originalParams = UnforgettablePathParams(
+            dataTransferId = "uuid-123",
+            encryptionPublicKey = "public-key-data",
+            factors = listOf(RecoveryFactor.FACE, RecoveryFactor.IMAGE, RecoveryFactor.PASSWORD),
+            walletAddress = "0x456",
+            group = "test-group",
+            customParams = mapOf("t" to "dark", "d" to "data")
+        )
+        
+        val hash = composeUnforgettableLocationHash(originalParams)
+        val parsedParams = parseUnforgettableLocationHash(hash)
+        
+        assertEquals(originalParams.dataTransferId, parsedParams.dataTransferId)
+        assertEquals(originalParams.encryptionPublicKey, parsedParams.encryptionPublicKey)
+        assertEquals(originalParams.factors, parsedParams.factors)
+        assertEquals(originalParams.walletAddress, parsedParams.walletAddress)
+        assertEquals(originalParams.group, parsedParams.group)
+        assertEquals("dark", parsedParams.customParams?.get("t"))
+        assertEquals("data", parsedParams.customParams?.get("d"))
     }
 }

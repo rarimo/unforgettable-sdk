@@ -73,6 +73,7 @@ struct ContentView: View {
                             
               Text(viewModel.recoveryUrl)
                 .font(.caption)
+                .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
