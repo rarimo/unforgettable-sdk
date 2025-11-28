@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./images/logo.png" alt="Unforgettable SDK Logo" width="160" />
+<img src="./images/logo.png" alt="Unforgettable SDK Logo" width="120" />
 
 # Unforgettable SDK
 
