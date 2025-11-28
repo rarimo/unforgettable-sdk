@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.rarimo"
-version = "0.7.0"
+version = "0.8.0"
 
 repositories {
     mavenCentral()
@@ -37,7 +37,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.rarimo"
             artifactId = "unforgettable-sdk"
-            version = "0.7.0"
+            version = "0.8.0"
             
             from(components["java"])
             
