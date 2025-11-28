@@ -181,7 +181,7 @@ data class UnforgettableSdkOptions(
 - `mode`: Either `UnforgettableMode.CREATE` or `UnforgettableMode.RESTORE`
 - `appUrl`: The Unforgettable app URL (default: `https://unforgettable.app`)
 - `apiUrl`: The Unforgettable API URL (default: `https://api.unforgettable.app`)
-- `factors`: List of recovery factors to use
+- `factors`: Optional list of recovery factors to use
 - `walletAddress`: Optional wallet address to associate with the recovery
 - `group`: Optional group identifier for organizing recovery keys
 - `customParams`: Optional custom URL parameters to pass to the recovery app

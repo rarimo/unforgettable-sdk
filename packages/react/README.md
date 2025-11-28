@@ -38,6 +38,7 @@ function App() {
       mode="create"
       factors={[RecoveryFactor.Face, RecoveryFactor.Password]}
       group="my-app"
+      // walletAddress="0x1234567890abcdef" // Required for 'restore' mode
       qrProps={{ size: 300 }}
       onSuccess={(privateKey, helperDataUrl) => {
         console.log('Recovery successful!')
@@ -65,6 +66,8 @@ function RecoverySetup() {
   const recoveryLink = useUnforgettableLink({
     mode: 'create',
     factors: [RecoveryFactor.Face, RecoveryFactor.Password],
+    group: 'my-app',
+    // walletAddress="0x1234567890abcdef" // Required for 'restore' mode
     pollingInterval: 3000,
     onSuccess: (privateKey) => {
       console.log('Recovered key:', privateKey)
@@ -119,7 +122,7 @@ interface UnforgettableQrCodeProps {
 - `mode`: Either `'create'` or `'restore'`
 - `appUrl`: Optional custom Unforgettable app URL
 - `apiUrl`: Optional custom API URL
-- `factors`: List of recovery factors to use
+- `factors`: Optional list of recovery factors to use
 - `walletAddress`: Wallet address (required for restore mode)
 - `group`: Optional group identifier
 - `customParams`: Optional custom URL parameters
@@ -196,7 +199,7 @@ string | null // The recovery URL or null if still generating
     restoreWallet(privateKey)
   }}
   onError={(error) => {
-    alert(`Recovery failed: ${error.message}`)
+    console.error(`Recovery failed: ${error.message}`)
   }}
 />
 ```
@@ -239,7 +242,7 @@ enum RecoveryFactor {
 
 ## Requirements
 
-- React 17.0+ or 18.0+ or 19.0+
+- React 17+
 - Node.js 18+ or modern browser environment
 
 ## License

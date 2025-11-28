@@ -17,7 +17,7 @@
 
 ## 📖 Overview
 
-The Unforgettable SDK is a comprehensive, multi-platform toolkit for implementing secure, seedless wallet recovery in your applications. It enables users to recover their private keys using biometric factors (face recognition, physical objects) and traditional methods (passwords) without storing sensitive data on centralized servers.
+The Unforgettable SDK is a comprehensive, multi-platform toolkit for implementing secure, seedless wallet recovery in your applications. It enables users to recover their private keys using biometric factors (face recognition, physical objects) and traditional methods (passwords) without storing sensitive data on servers.
 
 ### Key Features
 
@@ -46,7 +46,7 @@ The SDK is organized into platform-specific packages:
 #### Core SDK (TypeScript/JavaScript)
 - Works in browsers and Node.js environments
 - Cryptographic key generation and encryption
-- Recovery URL generation with embedded parameters
+- Recovery URL generation with embedded and custom parameters
 - Polling mechanism for recovery completion
 - TypeScript type definitions
 
@@ -189,9 +189,9 @@ The SDK follows a zero-knowledge architecture:
 ```
 
 1. **Key Generation**: Client generates ephemeral key pairs
-2. **Encryption**: Recovery data encrypted with factors (face, password, etc.)
+2. **Encryption**: Recovery data encrypted client-side
 3. **Storage**: Only encrypted shards stored on API
-4. **Recovery**: User provides factors → decryption happens client-side
+4. **Recovery**: User provides only factors → decryption happens client-side
 5. **Zero-Knowledge**: Server never sees private keys or decrypted data
 
 ---
