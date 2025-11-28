@@ -4,30 +4,47 @@ A Kotlin library for integrating Unforgettable account recovery into your Androi
 
 ## Installation
 
-### Gradle
+### Gradle (Kotlin DSL)
 
-Add to your `build.gradle.kts`:
+Add JitPack repository and dependency to your `build.gradle.kts`:
 
 ```kotlin
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
 dependencies {
-    implementation("com.rarimo:unforgettable-sdk:0.8.0")
+    implementation("com.github.rarimo.unforgettable-sdk:android:0.8.0")
 }
 ```
 
-Or if using Groovy `build.gradle`:
+### Gradle (Groovy)
+
+Add to your `build.gradle`:
 
 ```groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
-    implementation 'com.rarimo:unforgettable-sdk:0.8.0'
+    implementation 'com.github.rarimo.unforgettable-sdk:android:0.8.0'
 }
 ```
 
 ### Maven
 
 ```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
 <dependency>
-    <groupId>com.rarimo</groupId>
-    <artifactId>unforgettable-sdk</artifactId>
+    <groupId>com.github.rarimo.unforgettable-sdk</groupId>
+    <artifactId>android</artifactId>
     <version>0.8.0</version>
 </dependency>
 ```

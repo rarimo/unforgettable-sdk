@@ -38,7 +38,7 @@ The SDK is organized into platform-specific packages:
 |---------|----------|---------|---------------|
 | [`@rarimo/unforgettable-sdk`](./packages/core) | TypeScript/JavaScript (Core) | ![npm](https://img.shields.io/npm/v/@rarimo/unforgettable-sdk) | [Docs](./packages/core/README.md) |
 | [`@rarimo/unforgettable-sdk-react`](./packages/react) | React Components | ![npm](https://img.shields.io/npm/v/@rarimo/unforgettable-sdk-react) | [Docs](./packages/react/README.md) |
-| [`com.rarimo:unforgettable-sdk`](./packages/android) | Android (Kotlin) | ![Maven](https://img.shields.io/maven-central/v/com.rarimo/unforgettable-sdk) | [Docs](./packages/android/README.md) |
+| [`com.github.rarimo.unforgettable-sdk:android`](./packages/android) | Android (Kotlin) | ![JitPack](https://jitpack.io/v/rarimo/unforgettable-sdk.svg) | [Docs](./packages/android/README.md) |
 | [`UnforgettableSDK`](./packages/ios) | iOS (Swift) | ![SwiftPM](https://img.shields.io/badge/SwiftPM-compatible-brightgreen) | [Docs](./packages/ios/README.md) |
 
 ### Package Features
@@ -100,8 +100,12 @@ function App() {
 ### Android
 
 ```kotlin
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
 dependencies {
-    implementation("com.rarimo:unforgettable-sdk:0.8.0")
+    implementation("com.github.rarimo.unforgettable-sdk:android:0.8.0")
 }
 ```
 
@@ -250,7 +254,7 @@ unforgettable-sdk/
 yarn build             # Build all packages
 yarn lint              # Lint TypeScript code
 yarn test              # Run all tests
-yarn publish:stable    # Publish packages to npm/Maven/Swift Package Manager
+yarn publish:stable    # Publish packages to NPM
 ```
 
 ---
@@ -342,7 +346,7 @@ Copyright © 2025 Zero Block Global Foundation
 - [Changelog](./CHANGELOG.md)
 - [GitHub Issues](https://github.com/rarimo/unforgettable-sdk/issues)
 - [npm Package](https://www.npmjs.com/package/@rarimo/unforgettable-sdk)
-- [Maven Central](https://central.sonatype.com/artifact/com.rarimo/unforgettable-sdk)
+- [JitPack (Android)](https://jitpack.io/#rarimo/unforgettable-sdk)
 
 ---
 
