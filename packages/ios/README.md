@@ -10,7 +10,7 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/rarimo/unforgettable-sdk", from: "0.6.0")
+    .package(url: "https://github.com/rarimo/unforgettable-sdk", from: "0.8.0")
 ]
 ```
 

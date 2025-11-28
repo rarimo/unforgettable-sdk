@@ -1,4 +1,4 @@
-package app.unforgettable.sdk
+package com.rarimo.unforgettable
 
 import org.junit.Test
 import kotlin.test.assertEquals

@@ -2,11 +2,11 @@ package app.unforgettable.example
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.unforgettable.sdk.UnforgettableSDK
-import app.unforgettable.sdk.UnforgettableMode
-import app.unforgettable.sdk.UnforgettableSdkOptions
-import app.unforgettable.sdk.RecoveryFactor
-import app.unforgettable.sdk.UnforgettableSDKError
+import com.rarimo.unforgettable.UnforgettableSDK
+import com.rarimo.unforgettable.UnforgettableMode
+import com.rarimo.unforgettable.UnforgettableSdkOptions
+import com.rarimo.unforgettable.RecoveryFactor
+import com.rarimo.unforgettable.UnforgettableSDKError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

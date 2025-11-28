@@ -10,7 +10,7 @@ Add to your `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("app.unforgettable:unforgettable-sdk:0.6.0")
+    implementation("com.rarimo:unforgettable-sdk:0.8.0")
 }
 ```
 
@@ -18,7 +18,7 @@ Or if using Groovy `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'app.unforgettable:unforgettable-sdk:0.6.0'
+    implementation 'com.rarimo:unforgettable-sdk:0.8.0'
 }
 ```
 
@@ -26,9 +26,9 @@ dependencies {
 
 ```xml
 <dependency>
-    <groupId>app.unforgettable</groupId>
+    <groupId>com.rarimo</groupId>
     <artifactId>unforgettable-sdk</artifactId>
-    <version>0.6.0</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 
@@ -37,7 +37,7 @@ dependencies {
 ### Creating a Recovery URL
 
 ```kotlin
-import app.unforgettable.sdk.*
+import com.rarimo.unforgettable.*
 
 val sdk = UnforgettableSDK(
     UnforgettableSdkOptions(
@@ -56,7 +56,7 @@ println("Recovery URL: $recoveryUrl")
 ### Restoring an Account
 
 ```kotlin
-import app.unforgettable.sdk.*
+import com.rarimo.unforgettable.*
 import kotlinx.coroutines.*
 
 val sdk = UnforgettableSDK(
@@ -217,10 +217,10 @@ If you use ProGuard, add these rules to your `proguard-rules.pro`:
 
 ```proguard
 # Keep SDK classes
--keep class app.unforgettable.sdk.** { *; }
+-keep class com.rarimo.unforgettable.** { *; }
 
 # Keep serialization classes
--keepclassmembers class app.unforgettable.sdk.** {
+-keepclassmembers class com.rarimo.unforgettable.** {
     @kotlinx.serialization.* <fields>;
 }
 ```

@@ -1,4 +1,4 @@
-package app.unforgettable.sdk
+package com.rarimo.unforgettable
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

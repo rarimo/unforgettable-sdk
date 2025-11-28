@@ -1,4 +1,4 @@
-package app.unforgettable.sdk
+package com.rarimo.unforgettable
 
 import java.net.URLEncoder
 import java.net.URLDecoder

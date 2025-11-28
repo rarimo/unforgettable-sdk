@@ -1,4 +1,4 @@
-package app.unforgettable.sdk
+package com.rarimo.unforgettable
 
 import com.google.crypto.tink.subtle.X25519
 import com.google.crypto.tink.subtle.Hkdf

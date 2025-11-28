@@ -4,8 +4,8 @@ plugins {
     id("maven-publish")
 }
 
-group = "app.unforgettable"
-version = "0.6.0"
+group = "com.rarimo"
+version = "0.7.0"
 
 repositories {
     mavenCentral()
@@ -35,9 +35,9 @@ kotlin {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "app.unforgettable"
+            groupId = "com.rarimo"
             artifactId = "unforgettable-sdk"
-            version = "0.6.0"
+            version = "0.7.0"
             
             from(components["java"])
             
