@@ -1,113 +1,212 @@
 # Unforgettable SDK
 
-The `Unforgettable SDK` is a secure, client-side toolkit for key exchange and recovery in the [Unforgettable.app](https://unforgettable.app) ecosystem. It lets you generate secure links to [Unforgettable.app](https://unforgettable.app) and retrieve a private key recovered from specified factors, such as face, physical object, password, etc.
+A TypeScript/JavaScript library for integrating Unforgettable account recovery into your web applications.
 
----
+## Installation
 
-## 📦 Installation
+### npm
+
+```bash
+npm install @rarimo/unforgettable-sdk
+```
+
+### yarn
 
 ```bash
 yarn add @rarimo/unforgettable-sdk
 ```
 
+### pnpm
+
+```bash
+pnpm add @rarimo/unforgettable-sdk
+```
+
 ## Usage
 
-### Setting up a recovery key
+### Creating a Recovery URL
 
-1. Create a new SDK instance:
-
-```ts
+```typescript
 import { UnforgettableSdk, RecoveryFactor } from '@rarimo/unforgettable-sdk'
 
 const sdk = new UnforgettableSdk({
-  // 'create' for creating a new key, 'restore' for recovering an existing one
   mode: 'create',
-  // Optional, defaults to 'https://unforgettable.app'
-  appUrl: 'https://custom.app',
-  // Optional, defaults to 'https://api.unforgettable.app'
-  apiUrl: 'https://api.custom.app',
-  // Factors to use for recovery. If not provided, the user will select them during the recovery process.
   factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
-  // Optional, group identifier for organizing recovery keys
-  group: 'my-organization',
-  // Optional, custom URL parameters to pass to the recovery app
-  customParams: {
-    theme: 'dark',
-    lang: 'en',
-  },
+  walletAddress: '0x1234567890abcdef',
+  group: 'my-organization', // Optional
+  customParams: { theme: 'dark', lang: 'en' } // Optional
 })
-```
 
-2. Generate a secure recovery URL to share:
-
-```ts
 const recoveryUrl = await sdk.getRecoveryUrl()
-// You can now share this URL or display it as a QR code.
-// This is a direct link to Unforgettable.app with embedded necessary query parameters.
 console.log('Recovery URL:', recoveryUrl)
 ```
 
-3. Get the recovered key and helper data URL:
+### Restoring an Account
 
-```ts
-import { NotFoundError } from '@rarimo/unforgettable-sdk'
-
-try {
-  const recoveryKey = await sdk.getRecoveredKey()
-  // This is the recovered Unforgettable private key.
-  // You can now create a wallet with it.
-  console.log('Recovered key:', recoveryKey)
-} catch (error) {
-  if (error instanceof NotFoundError) {
-    // No recovery data found yet, try again later
-  } else {
-    console.error('Recovery error:', error)
-  }
-}
-```
-
-### Recovering the key
-
-1. Create a new SDK instance with the wallet address:
-
-```ts
-import { UnforgettableSdk, RecoveryFactor } from '@rarimo/unforgettable-sdk'
+```typescript
+import { UnforgettableSdk, RecoveryFactor, NotFoundError } from '@rarimo/unforgettable-sdk'
 
 const sdk = new UnforgettableSdk({
   mode: 'restore',
-  walletAddress: '0x1234...abcd', // The wallet address associated with the key to recover
-  appUrl: 'https://custom.app', // Optional
-  apiUrl: 'https://api.custom.app', // Optional
-  factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password], // Optional
-  group: 'my-organization', // Optional
-  customParams: { theme: 'dark' }, // Optional
+  walletAddress: '0x1234...abcd',
+  factors: [RecoveryFactor.Face, RecoveryFactor.Password]
 })
-```
 
-2. Generate a secure recovery URL to share:
-
-```ts
 const recoveryUrl = await sdk.getRecoveryUrl()
-console.log('Recovery URL:', recoveryUrl)
-```
 
-3. Get the recovered key:
-
-```ts
-import { NotFoundError } from '@rarimo/unforgettable-sdk'
-
+// After the user completes the recovery process...
 try {
-  const recoveryKey = await sdk.getRecoveredKey()
-  console.log('Recovered key:', recoveryKey)
+  const recoveredData = await sdk.getRecoveredData()
+  console.log('Recovery Key:', recoveredData.recoveryKey)
+  
+  if (recoveredData.helperDataUrl) {
+    console.log('Helper Data URL:', recoveredData.helperDataUrl)
+  }
 } catch (error) {
   if (error instanceof NotFoundError) {
-    // No recovery data found yet, try again later
+    console.log('Data not ready yet, try again later')
   } else {
-    console.error('Recovery error:', error)
+    console.error('Error during recovery:', error)
   }
 }
 ```
 
+### Available Recovery Factors
+
+```typescript
+enum RecoveryFactor {
+  Face = 1,
+  Image = 2,
+  Password = 3
+}
+```
+
+## API
+
+### `UnforgettableSdk`
+
+The main SDK class.
+
+#### Constructor
+
+```typescript
+new UnforgettableSdk(options: UnforgettableSdkOptions)
+```
+
+**Parameters:**
+- `options`: Configuration options for the SDK
+
+#### Methods
+
+##### `getRecoveryUrl()`
+
+Generates the recovery URL to present to the user.
+
+```typescript
+async getRecoveryUrl(): Promise<string>
+```
+
+**Returns:** The recovery URL as a string
+
+##### `getRecoveredData()`
+
+Retrieves the recovered data from the API.
+
+```typescript
+async getRecoveredData(): Promise<RecoveredData>
+```
+
+**Returns:** The recovered data including the recovery key and optional helper data URL
+
+**Throws:** `NotFoundError` if data is not ready yet, or other errors on failure
+
+##### `getRecoveredKey()`
+
+Retrieves only the recovered key.
+
+```typescript
+async getRecoveredKey(): Promise<string>
+```
+
+**Returns:** The recovered key as a string
+
+**Throws:** `NotFoundError` if data is not ready yet, or other errors on failure
+
+### `UnforgettableSdkOptions`
+
+Configuration options for the SDK.
+
+```typescript
+interface UnforgettableSdkOptions {
+  mode: 'create' | 'restore'
+  appUrl?: string // Default: 'https://unforgettable.app'
+  apiUrl?: string // Default: 'https://api.unforgettable.app'
+  factors?: RecoveryFactor[]
+  walletAddress?: string
+  group?: string
+  customParams?: Record<string, string>
+}
+```
+
+**Parameters:**
+- `mode`: Either `'create'` or `'restore'`
+- `appUrl`: The Unforgettable app URL (default: `https://unforgettable.app`)
+- `apiUrl`: The Unforgettable API URL (default: `https://api.unforgettable.app`)
+- `factors`: List of recovery factors to use
+- `walletAddress`: Wallet address to associate with the recovery (required for `restore` mode)
+- `group`: Optional group identifier for organizing recovery keys
+- `customParams`: Optional custom URL parameters to pass to the recovery app
+
+### Error Types
+
+#### `NotFoundError`
+
+Thrown when recovery data is not yet available:
+
+```typescript
+import { NotFoundError } from '@rarimo/unforgettable-sdk'
+
+try {
+  const key = await sdk.getRecoveredKey()
+} catch (error) {
+  if (error instanceof NotFoundError) {
+    // Data not ready, poll again later
+  }
+}
+```
+
+## Polling for Recovery
+
+The SDK does not automatically poll for recovery completion. You need to implement polling yourself:
+
+```typescript
+async function pollForRecovery(sdk: UnforgettableSdk, maxAttempts = 60) {
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      const recoveredKey = await sdk.getRecoveredKey()
+      console.log('Recovery successful:', recoveredKey)
+      return recoveredKey
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        await new Promise(resolve => setTimeout(resolve, 3000))
+        continue
+      }
+      throw error
+    }
+  }
+  throw new Error('Recovery timeout')
+}
+```
+
+## Requirements
+
+- Node.js 18+ or modern browser with Web Crypto API support
+- TypeScript 5.0+ (optional but recommended)
+
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+MIT License - see LICENSE file for details
+
+## Homepage
+
+[https://unforgettable.app](https://unforgettable.app)

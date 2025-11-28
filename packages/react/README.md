@@ -1,110 +1,251 @@
-# Unforgettable React SDK
+# Unforgettable SDK for React
 
-React QR code component for the [Unforgettable SDK](https://github.com/rarimo/unforgettable-sdk). Add identity verification to your React app with a scannable QR code that works with [Unforgettable.app](https://unforgettable.app).
-
-## Features
-
-- Simple QR code component for React
-- Works with [Unforgettable SDK core library](https://github.com/rarimo/unforgettable-sdk/tree/main/packages/core)
-- Supports **create** and **restore** modes
-- Built-in polling with success/error callbacks
-- Fully customizable via props
+A React library with QR code component and hooks for integrating Unforgettable account recovery into your React applications.
 
 ## Installation
+
+### npm
+
+```bash
+npm install @rarimo/unforgettable-sdk-react
+```
+
+### yarn
 
 ```bash
 yarn add @rarimo/unforgettable-sdk-react
 ```
 
-## Component: UnforgettableQrCode
+### pnpm
 
-This component renders a QR code wrapped in an `<a>` tag that links to the identity creation or recovery page on Unforgettable.app.
+```bash
+pnpm add @rarimo/unforgettable-sdk-react
+```
 
-### What it does
+## Usage
 
-- Generates a recovery link using `UnforgettableSdk`.
-- Displays a QR code containing the link.
-- Starts polling for the recovery key.
-- Triggers `onSuccess` or `onError` callbacks when appropriate.
+### QR Code Component
 
-### Props
-
-- `mode: 'create' | 'restore'` — required field for operation type.
-- `appUrl?: string` — optional App URL where you'll be redirected.
-- `apiUrl?: string` — optional API URL where you can set custom link.
-- `factors?: RecoveryFactor[]` — optional custom recovery factors.
-- `walletAddress?: string` — wallet address to recover, required for `restore` mode.
-- `group?: string` — optional identifier for grouping wallets.
-- `customParams?: Record<string, string>` — object of arbitrary key/value pairs to pass into the URL hash.
-- `pollingInterval?: number` — optional polling interval in milliseconds (default: `5000`).
-- `pollingDisabled?: boolean` — optional possibility when to start pooling (default: `false`).
-- `onSuccess?: (privateKey: string, helperDataUrl?: string) => void` — callback when the private key is successfully restored.
-- `onError?: (error: Error) => void` — callback when an error occurs during polling.
-- `qrProps` — optional object with props passed to `QRCodeSVG` (e.g., `size`, `fgColor`, `bgColor`, `level`, etc.).
-- `loader?` — element to render inside the loader container (e.g., a spinner or text) while the QR code link is being generated.
-- `...rest` — any valid HTML attributes applied to the `<a>` element (e.g., `className`, `style`, `target`, etc.).
-
-### Example usage
+The `UnforgettableQrCode` component renders a QR code that users can scan to complete the recovery process.
 
 ```tsx
 import UnforgettableQrCode from '@rarimo/unforgettable-sdk-react'
+import { RecoveryFactor } from '@rarimo/unforgettable-sdk'
 
-// ...
+function App() {
+  return (
+    <UnforgettableQrCode
+      mode="create"
+      factors={[RecoveryFactor.Face, RecoveryFactor.Password]}
+      group="my-app"
+      qrProps={{ size: 300 }}
+      onSuccess={(privateKey, helperDataUrl) => {
+        console.log('Recovery successful!')
+        console.log('Private Key:', privateKey)
+        console.log('Helper Data URL:', helperDataUrl)
+      }}
+      onError={(error) => {
+        console.error('Recovery failed:', error)
+      }}
+    />
+  )
+}
+```
+
+### Using the Hook
+
+The `useUnforgettableLink` hook provides more control over the recovery process:
+
+```tsx
+import { useUnforgettableLink } from '@rarimo/unforgettable-sdk-react'
+import { RecoveryFactor } from '@rarimo/unforgettable-sdk'
+import { QRCodeSVG } from 'qrcode.react'
+
+function RecoverySetup() {
+  const recoveryLink = useUnforgettableLink({
+    mode: 'create',
+    factors: [RecoveryFactor.Face, RecoveryFactor.Password],
+    pollingInterval: 3000,
+    onSuccess: (privateKey) => {
+      console.log('Recovered key:', privateKey)
+    },
+    onError: (error) => {
+      console.error('Error:', error)
+    }
+  })
+
+  return (
+    <div>
+      {recoveryLink ? (
+        <a href={recoveryLink} target="_blank" rel="noopener noreferrer">
+          <QRCodeSVG value={recoveryLink} size={256} />
+        </a>
+      ) : (
+        <p>Generating recovery link...</p>
+      )}
+    </div>
+  )
+}
+```
+
+## API
+
+### Component: `UnforgettableQrCode`
+
+A React component that renders a QR code for account recovery.
+
+#### Props
+
+```typescript
+interface UnforgettableQrCodeProps {
+  mode: 'create' | 'restore'
+  appUrl?: string
+  apiUrl?: string
+  factors?: RecoveryFactor[]
+  walletAddress?: string // Required for 'restore' mode
+  group?: string
+  customParams?: Record<string, string>
+  pollingInterval?: number // Default: 5000ms
+  pollingDisabled?: boolean // Default: false
+  onSuccess?: (privateKey: string, helperDataUrl?: string) => void
+  onError?: (error: Error) => void
+  qrProps?: QRCodeSVGProps
+  loader?: React.ReactNode
+  // ...plus any valid <a> element attributes
+}
+```
+
+**Parameters:**
+- `mode`: Either `'create'` or `'restore'`
+- `appUrl`: Optional custom Unforgettable app URL
+- `apiUrl`: Optional custom API URL
+- `factors`: List of recovery factors to use
+- `walletAddress`: Wallet address (required for restore mode)
+- `group`: Optional group identifier
+- `customParams`: Optional custom URL parameters
+- `pollingInterval`: Polling interval in milliseconds (default: 5000)
+- `pollingDisabled`: Disable automatic polling (default: false)
+- `onSuccess`: Callback when recovery succeeds
+- `onError`: Callback when an error occurs
+- `qrProps`: Props passed to the QR code component (size, colors, etc.)
+- `loader`: Custom loading component
+
+### Hook: `useUnforgettableLink`
+
+A React hook that generates a recovery link and handles polling.
+
+#### Parameters
+
+```typescript
+interface UseUnforgettableLinkOptions {
+  mode: 'create' | 'restore'
+  appUrl?: string
+  apiUrl?: string
+  factors?: RecoveryFactor[]
+  walletAddress?: string
+  group?: string
+  customParams?: Record<string, string>
+  pollingInterval?: number
+  pollingDisabled?: boolean
+  onSuccess?: (privateKey: string, helperDataUrl?: string) => void
+  onError?: (error: Error) => void
+}
+```
+
+#### Returns
+
+```typescript
+string | null // The recovery URL or null if still generating
+```
+
+## Examples
+
+### Create Recovery with Custom Styling
+
+```tsx
 <UnforgettableQrCode
-  mode='create'
-  qrProps={{ size: 200 }}
-  loader={<span>Loading...</span>}
-  style={{ margin: '2rem auto', display: 'block' }}
-  onSuccess={key => console.log('Recovered:', key)}
-  onError={error => console.error(error)}
+  mode="create"
+  factors={[RecoveryFactor.Face, RecoveryFactor.Image]}
+  qrProps={{
+    size: 300,
+    bgColor: '#ffffff',
+    fgColor: '#000000',
+    level: 'H'
+  }}
+  style={{
+    display: 'block',
+    margin: '20px auto',
+    padding: '10px',
+    border: '2px solid #ccc'
+  }}
+  loader={<div className="spinner">Loading...</div>}
+  onSuccess={(key) => console.log('Key:', key)}
 />
 ```
 
-## Hook: useUnforgettableLink()
-
-This React hook generates a secure recovery link and handles polling for the recovered private key from the Unforgettable backend.
-
-### What it does
-
-- Instantiates the `UnforgettableSdk` with the provided mode.
-- Generates a secure link containing the public key.
-- Starts polling the backend to retrieve the encrypted recovery key.
-- On success, decrypts the key and passes it to the `onSuccess` callback.
-- On failure, stops polling and fires the `onError` callback.
-
-### Parameters
-
-- `mode` — `'create' | 'restore'` — required field for operation type.
-- `appUrl` — optional App URL.
-- `apiUrl` — optional API URL.
-- `factors?: RecoveryFactor[]` — optional custom recovery factors.
-- `walletAddress?: string` — wallet address to recover, required for `restore` mode.
-- `group?: string` — optional identifier for grouping wallets.
-- `customParams?: Record<string, string>` — object of arbitrary key/value pairs to pass into the URL hash.
-- `pollingInterval?` — optional interval in milliseconds between polling attempts (default: `5000`).
-- `pollingDisabled?: boolean` — optional possibility when to start pooling (default: `false`).
-- `onSuccess?` — callback function called with the recovered private key when successful.
-- `onError?` — callback function called with an error if polling fails or the transfer is invalid.
-
-### Returns
-
-- A `string` containing the recovery link that can be passed to a QR code component or opened in a browser.
-
-### Example usage
+### Restore Account
 
 ```tsx
-const recoveryLink = useUnforgettableLink({
-  mode: 'restore',
-  pollingInterval: 3000,
-  onSuccess: privateKey => {
-    console.log('Recovered key:', privateKey)
-  },
-  onError: err => {
-    console.error('Polling error:', err)
-  },
-})
+<UnforgettableQrCode
+  mode="restore"
+  walletAddress="0x1234567890abcdef"
+  factors={[RecoveryFactor.Face, RecoveryFactor.Password]}
+  pollingInterval={2000}
+  onSuccess={(privateKey, helperDataUrl) => {
+    // Restore wallet with the private key
+    restoreWallet(privateKey)
+  }}
+  onError={(error) => {
+    alert(`Recovery failed: ${error.message}`)
+  }}
+/>
 ```
+
+### Manual Polling Control
+
+```tsx
+function ManualRecovery() {
+  const [startPolling, setStartPolling] = useState(false)
+  
+  const link = useUnforgettableLink({
+    mode: 'create',
+    pollingDisabled: !startPolling,
+    onSuccess: (key) => {
+      console.log('Success:', key)
+      setStartPolling(false)
+    }
+  })
+
+  return (
+    <div>
+      {link && <QRCodeSVG value={link} />}
+      <button onClick={() => setStartPolling(true)}>
+        Start Polling
+      </button>
+    </div>
+  )
+}
+```
+
+## Available Recovery Factors
+
+```typescript
+enum RecoveryFactor {
+  Face = 1,
+  Image = 2,
+  Password = 3
+}
+```
+
+## Requirements
+
+- React 17.0+ or 18.0+ or 19.0+
+- Node.js 18+ or modern browser environment
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+MIT License - see LICENSE file for details
+
+## Homepage
+
+[https://unforgettable.app](https://unforgettable.app)
