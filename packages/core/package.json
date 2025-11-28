@@ -18,7 +18,9 @@
   },
   "dependencies": {
     "@distributedlab/jac": "1.0.0-rc.17",
-    "node-forge": "1.3.1",
+    "@noble/ciphers": "2.0.1",
+    "@noble/curves": "2.0.1",
+    "@noble/hashes": "2.0.1",
     "uuid": "9.0.1"
   },
   "devDependencies": {
@@ -28,7 +30,6 @@
     "@swc/jest": "0.2.39",
     "@types/jest": "30.0.0",
     "@types/node": "18.14.2",
-    "@types/node-forge": "1",
     "@types/uuid": "10.0.0",
     "jest": "30.0.0",
     "tsc-alias": "1.8.2",

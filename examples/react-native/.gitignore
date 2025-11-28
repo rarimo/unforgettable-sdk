@@ -1,0 +1,21 @@
+node_modules/
+npm-debug.log
+yarn-error.log
+.DS_Store
+*.log
+
+# iOS
+ios/build/
+ios/Pods/
+ios/*.xcworkspace
+!ios/*.xcodeproj
+
+# Android
+android/build/
+android/app/build/
+android/.gradle/
+*.apk
+*.aab
+
+# Metro
+.metro-health-check*

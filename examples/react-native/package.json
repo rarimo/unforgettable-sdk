@@ -1,0 +1,43 @@
+{
+  "name": "react-native-example",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@rarimo/unforgettable-sdk": "file:../../packages/core",
+    "buffer": "6.0.3",
+    "fastestsmallesttextencoderdecoder": "1.0.22",
+    "react": "18.2.0",
+    "react-native": "0.73.2",
+    "react-native-get-random-values": "1.11.0",
+    "react-native-url-polyfill": "3.0.0",
+    "react-native-webview": "13.6.4",
+    "viem": "2.40.2"
+  },
+  "devDependencies": {
+    "@babel/core": "7.28.5",
+    "@babel/preset-env": "7.28.5",
+    "@babel/runtime": "7.28.4",
+    "@react-native/babel-preset": "0.73.19",
+    "@react-native/eslint-config": "0.73.2",
+    "@react-native/metro-config": "0.73.3",
+    "@react-native/typescript-config": "0.73.1",
+    "@types/react": "18.2.6",
+    "@types/react-test-renderer": "18.3.1",
+    "babel-jest": "29.6.3",
+    "eslint": "8.19.0",
+    "jest": "29.6.3",
+    "prettier": "2.8.8",
+    "react-test-renderer": "18.2.0",
+    "typescript": "5.8.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

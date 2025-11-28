@@ -16,4 +16,12 @@ module.exports = {
   transform: {
     '^.+\\.(t|j)sx?$': ['@swc/jest', { ...config, swcrc: false, exclude: [] }],
   },
+
+  transformIgnorePatterns: [
+    'node_modules/(?!(@noble)/)',
+  ],
+
+  moduleNameMapper: {
+    '^@noble/(.*)$': '<rootDir>/../../node_modules/@noble/$1',
+  },
 };

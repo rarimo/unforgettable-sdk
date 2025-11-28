@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
+### Added
+- `android` - Native Kotlin SDK package with coroutines support
+- `ios` - Native Swift SDK package with async/await support
+- `examples/android` - Android example app with WebView integration
+- `examples/react-native` - React Native mobile example
+- `examples/ios` - iOS example app
+
+### Changed
+- `core` - Changed encryption algorithm from RSA to X25519 for improved performance and security
 
 ## [0.7.0] - 2025-11-14
 ### Added
