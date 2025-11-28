@@ -9,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/%40rarimo%2Funforgettable-sdk.svg)](https://badge.fury.io/js/%40rarimo%2Funforgettable-sdk)
 
-[Documentation](https://docs.unforgettable.app) • [Website](https://unforgettable.app) • [Examples](#-examples)
+[Documentation](https://docs.unforgettable.app) • [Website](https://unforgettable.app) • [Examples](#-examples) • [Changelog](./CHANGELOG.md)
 
 </div>
 
@@ -339,6 +339,7 @@ Copyright © 2025 Zero Block Global Foundation
 
 - [Website](https://unforgettable.app)
 - [Documentation](https://docs.unforgettable.app)
+- [Changelog](./CHANGELOG.md)
 - [GitHub Issues](https://github.com/rarimo/unforgettable-sdk/issues)
 - [npm Package](https://www.npmjs.com/package/@rarimo/unforgettable-sdk)
 - [Maven Central](https://central.sonatype.com/artifact/com.rarimo/unforgettable-sdk)
