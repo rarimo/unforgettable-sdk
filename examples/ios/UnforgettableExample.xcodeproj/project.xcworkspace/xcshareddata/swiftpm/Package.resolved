@@ -1,0 +1,15 @@
+{
+  "originHash" : "8f8586967760b678f9e9c2d89b33e6b234500127d7036abb30413edbc50b225e",
+  "pins" : [
+    {
+      "identity" : "unforgettable-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/rarimo/unforgettable-sdk",
+      "state" : {
+        "revision" : "db89669ce8792fe9b57c8724e8f893805f3d4179",
+        "version" : "0.8.0"
+      }
+    }
+  ],
+  "version" : 3
+}

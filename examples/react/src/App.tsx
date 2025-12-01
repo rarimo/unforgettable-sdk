@@ -168,8 +168,6 @@ export default function App() {
               <UnforgettableQrCode
                 qrProps={{ size: 200 }}
                 mode={mode}
-                appUrl={`http://localhost:3000`}
-                apiUrl={`https://api.dev.unforgettable.app`}
                 factors={selectedFactors}
                 walletAddress={mode === 'restore' ? walletAddress || undefined : undefined}
                 group={group || undefined}
