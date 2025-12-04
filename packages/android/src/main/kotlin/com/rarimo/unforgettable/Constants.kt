@@ -1,6 +1,6 @@
 package com.rarimo.unforgettable
 
-const val UNFORGETTABLE_APP_URL = "https://unforgettable.app"
+const val UNFORGETTABLE_APP_URL = "https://unforgettable.app/sdk"
 const val UNFORGETTABLE_API_URL = "https://api.unforgettable.app"
 
 enum class RecoveryFactor(val value: Int) {

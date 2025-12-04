@@ -142,9 +142,6 @@ class RecoveryViewModel : ViewModel() {
                     _isPolling.value = false
                     _isWebViewVisible.value = false
                     
-                    recoveredData.helperDataUrl?.let { url ->
-                        _statusMessage.value += "\n\nHelper Data URL: $url"
-                    }
                     break
                 } catch (e: UnforgettableSDKError.NotFound) {
                     // Data not available yet, continue polling

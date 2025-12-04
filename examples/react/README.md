@@ -99,7 +99,7 @@ import { RecoveryFactor } from '@rarimo/unforgettable-sdk'
   mode="create"
   factors={[RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password]}
   group="my-group"
-  onSuccess={(key, helperDataUrl) => {
+  onSuccess={(key) => {
     console.log('Private key:', key)
     console.log('Wallet:', privateKeyToAccount(key).address)
   }}
@@ -124,7 +124,6 @@ The `UnforgettableQrCode` component automatically:
 Once recovery is complete, the app displays:
 - The recovered private key (hex format)
 - The derived Ethereum wallet address
-- Helper data URL (if applicable)
 
 ## Customization
 

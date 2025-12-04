@@ -90,10 +90,6 @@ lifecycleScope.launch {
     try {
         val recoveredData = sdk.getRecoveredData()
         println("Recovery Key: ${recoveredData.recoveryKey}")
-        
-        recoveredData.helperDataUrl?.let { url ->
-            println("Helper Data URL: $url")
-        }
     } catch (e: UnforgettableSDKError) {
         println("Error during recovery: $e")
     }
@@ -145,7 +141,7 @@ Retrieves the recovered data from the API (suspending function).
 suspend fun getRecoveredData(): RecoveredData
 ```
 
-**Returns:** The recovered data including the recovery key and optional helper data URL
+**Returns:** The recovered data including the recovery key
 
 **Throws:** `UnforgettableSDKError` on failure
 

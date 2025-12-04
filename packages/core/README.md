@@ -58,10 +58,6 @@ const recoveryUrl = await sdk.getRecoveryUrl()
 try {
   const recoveredData = await sdk.getRecoveredData()
   console.log('Recovery Key:', recoveredData.recoveryKey)
-  
-  if (recoveredData.helperDataUrl) {
-    console.log('Helper Data URL:', recoveredData.helperDataUrl)
-  }
 } catch (error) {
   if (error instanceof NotFoundError) {
     console.log('Data not ready yet, try again later')
@@ -116,7 +112,7 @@ Retrieves the recovered data from the API.
 async getRecoveredData(): Promise<RecoveredData>
 ```
 
-**Returns:** The recovered data including the recovery key and optional helper data URL
+**Returns:** The recovered data including the recovery key
 
 **Throws:** `NotFoundError` if data is not ready yet, or other errors on failure
 

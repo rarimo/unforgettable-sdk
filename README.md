@@ -136,7 +136,7 @@ import UnforgettableSDK
 
 let sdk = try UnforgettableSDK(
     mode: .create,
-    factors: [.face, .password]
+    factors: [.face, .image, .password]
 )
 
 let recoveryUrl = try sdk.getRecoveryUrl()

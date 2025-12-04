@@ -58,10 +58,6 @@ do {
     // After the user completes the recovery process...
     let recoveredData = try await sdk.getRecoveredData()
     print("Recovery Key: \(recoveredData.recoveryKey)")
-    
-    if let helperDataUrl = recoveredData.helperDataUrl {
-        print("Helper Data URL: \(helperDataUrl)")
-    }
 } catch {
     print("Error during recovery: \(error)")
 }
@@ -114,7 +110,7 @@ Retrieves the recovered data from the API.
 func getRecoveredData() async throws -> RecoveredData
 ```
 
-**Returns:** The recovered data including the recovery key and optional helper data URL
+**Returns:** The recovered data including the recovery key
 
 **Throws:** `UnforgettableSDKError` on failure
 

@@ -23,7 +23,7 @@ final class UnforgettableSDKTests: XCTestCase {
         
         let url = sdk.getRecoveryUrl()
         
-        XCTAssertTrue(url.hasPrefix("https://unforgettable.app/c#"))
+        XCTAssertTrue(url.hasPrefix("https://unforgettable.app/sdk/c#"))
         XCTAssertTrue(url.contains("id="))
         XCTAssertTrue(url.contains("epk="))
         XCTAssertTrue(url.contains("f=1"))
@@ -38,7 +38,7 @@ final class UnforgettableSDKTests: XCTestCase {
         
         let url = sdk.getRecoveryUrl()
         
-        XCTAssertTrue(url.hasPrefix("https://unforgettable.app/r#"))
+        XCTAssertTrue(url.hasPrefix("https://unforgettable.app/sdk/r#"))
         XCTAssertTrue(url.contains("id="))
         XCTAssertTrue(url.contains("epk="))
         XCTAssertTrue(url.contains("f=1,2,3"))

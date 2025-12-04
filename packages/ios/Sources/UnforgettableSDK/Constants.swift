@@ -1,6 +1,6 @@
 import Foundation
 
-public let UNFORGETTABLE_APP_URL = "https://unforgettable.app"
+public let UNFORGETTABLE_APP_URL = "https://unforgettable.app/sdk"
 public let UNFORGETTABLE_API_URL = "https://api.unforgettable.app"
 
 public enum RecoveryFactor: Int, CaseIterable, Codable {

@@ -1,4 +1,4 @@
-export const UNFORGETTABLE_APP_URL = 'https://unforgettable.app'
+export const UNFORGETTABLE_APP_URL = 'https://unforgettable.app/sdk'
 export const UNFORGETTABLE_API_URL = 'https://api.unforgettable.app'
 
 export enum RecoveryFactor {

@@ -32,7 +32,7 @@ class UnforgettableSDKTest {
         
         val url = sdk.getRecoveryUrl()
         
-        assertTrue(url.startsWith("https://unforgettable.app/c#"))
+        assertTrue(url.startsWith("https://unforgettable.app/sdk/c#"))
         assertTrue(url.contains("id="))
         assertTrue(url.contains("epk="))
         assertTrue(url.contains("f=1"))
@@ -50,7 +50,7 @@ class UnforgettableSDKTest {
         
         val url = sdk.getRecoveryUrl()
         
-        assertTrue(url.startsWith("https://unforgettable.app/r#"))
+        assertTrue(url.startsWith("https://unforgettable.app/sdk/r#"))
         assertTrue(url.contains("id="))
         assertTrue(url.contains("epk="))
         assertTrue(url.contains("f=1") && url.contains("3"))

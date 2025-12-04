@@ -66,7 +66,6 @@ describe('UnforgettableSdk', () => {
     beforeEach(() => {
       jest.spyOn(Utils, 'generateDataTransferKeyPair').mockResolvedValue({
         publicKey: 'mock-public-key',
-        encrypt: () => 'mock-encrypted',
         decrypt: () => 'mock-decrypted',
       })
     })
@@ -86,7 +85,7 @@ describe('UnforgettableSdk', () => {
       const recoveryUrl = await sdk.getRecoveryUrl()
 
       expect(recoveryUrl).toBe(
-        'https://unforgettable.app/c#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc&g=group',
+        'https://unforgettable.app/sdk/c#id=mock-uuid&epk=mock-public-key&f=1,2,3&wa=0xabc&g=group',
       )
       expect(composeSpy).toHaveBeenCalledTimes(1)
       expect(composeSpy).toHaveBeenCalledWith({
@@ -112,7 +111,7 @@ describe('UnforgettableSdk', () => {
       const recoveryUrl = await sdk.getRecoveryUrl()
 
       expect(recoveryUrl).toBe(
-        'https://unforgettable.app/r#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc&g=group',
+        'https://unforgettable.app/sdk/r#id=mock-uuid&epk=mock-public-key&f=1%2C2%2C3&wa=0xabc&g=group',
       )
       expect(composeSpy).toHaveBeenCalledTimes(1)
       expect(composeSpy).toHaveBeenCalledWith({
@@ -173,7 +172,6 @@ describe('UnforgettableSdk', () => {
     beforeEach(() => {
       jest.spyOn(Utils, 'generateDataTransferKeyPair').mockResolvedValue({
         publicKey: 'mock-public-key',
-        encrypt: s => `${s}-encrypted`,
         decrypt: s => s.replace(/-encrypted$/, ''),
       })
     })
@@ -185,7 +183,6 @@ describe('UnforgettableSdk', () => {
           id: 'mock-uuid',
           data: JSON.stringify({
             recovery_key: 'secret-encrypted',
-            helper_data_url: 'https://helper-data',
           }),
         },
       } as never)
@@ -197,7 +194,6 @@ describe('UnforgettableSdk', () => {
       )
       expect(result).toEqual({
         recoveryKey: 'secret',
-        helperDataUrl: 'https://helper-data',
       })
     })
 
@@ -216,7 +212,7 @@ describe('UnforgettableSdk', () => {
 
       const getRecoveredDataSpy = jest
         .spyOn(sdk, 'getRecoveredData')
-        .mockResolvedValue({ recoveryKey: 'recovery-key' as const, helperDataUrl: undefined })
+        .mockResolvedValue({ recoveryKey: 'recovery-key' as const })
 
       const key = await sdk.getRecoveredKey()
 

@@ -20,7 +20,6 @@ export default function App() {
     RecoveryFactor.Password,
   ])
 
-  const [helperDataUrl, setHelperDataUrl] = useState<string>('')
   const [mode, setMode] = useState<UnforgettableMode>('create')
 
   const toggleFactor = (factor: RecoveryFactor) => {
@@ -29,15 +28,13 @@ export default function App() {
     )
   }
 
-  const handleUnforgettableSuccess = useCallback((key: string, helperDataUrl?: string) => {
+  const handleUnforgettableSuccess = useCallback((key: string) => {
     setPrivateKey(key)
-    setHelperDataUrl(helperDataUrl ?? '')
     setWalletAddress(privateKeyToAccount(key as Hex).address)
   }, [])
 
   const handleReset = () => {
     setPrivateKey('')
-    setHelperDataUrl('')
     setWalletAddress('')
   }
 
@@ -137,19 +134,6 @@ export default function App() {
                     <span className='break-all font-mono text-xs'>{walletAddress}</span>
                   </p>
                 </>
-              )}
-              {helperDataUrl && (
-                <p>
-                  <span className='font-semibold'>Helper Data URL:</span>{' '}
-                  <a
-                    href={helperDataUrl}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='break-all text-blue-600 hover:underline text-xs'
-                  >
-                    {helperDataUrl}
-                  </a>
-                </p>
               )}
             </div>
 
