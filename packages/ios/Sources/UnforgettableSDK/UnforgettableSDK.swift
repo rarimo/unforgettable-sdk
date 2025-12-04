@@ -38,17 +38,14 @@ public struct UnforgettableSdkOptions {
 /// Payload inside the data transfer
 struct DataTransferPayload: Codable {
     let recovery_key: String
-    let helper_data_url: String?
 }
 
 /// Recovered data from the API
 public struct RecoveredData {
     public let recoveryKey: String
-    public let helperDataUrl: String?
     
-    public init(recoveryKey: String, helperDataUrl: String? = nil) {
+    public init(recoveryKey: String) {
         self.recoveryKey = recoveryKey
-        self.helperDataUrl = helperDataUrl
     }
 }
 
@@ -174,8 +171,7 @@ public class UnforgettableSDK {
         }
         
         return RecoveredData(
-            recoveryKey: decryptedKey,
-            helperDataUrl: payload.helper_data_url
+            recoveryKey: decryptedKey
         )
     }
     

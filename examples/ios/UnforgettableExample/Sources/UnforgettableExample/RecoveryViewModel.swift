@@ -77,10 +77,6 @@ class RecoveryViewModel: ObservableObject {
             self.statusMessage = "✅ Recovery successful!"
             self.isPolling = false
             self.isWebViewPresented = false
-                        
-            if let helperDataUrl = recoveredData.helperDataUrl {
-              self.statusMessage += "\n\nHelper Data URL: \(helperDataUrl)"
-            }
           }
           break
                     

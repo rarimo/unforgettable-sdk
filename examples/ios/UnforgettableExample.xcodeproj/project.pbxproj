@@ -3,15 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		56B34A042ED9FB2700B014D2 /* UnforgettableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 56B34A032ED9FB2700B014D2 /* UnforgettableSDK */; };
 		A10000001A000000000001 /* UnforgettableExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000A000000000001 /* UnforgettableExampleApp.swift */; };
 		A10000002A000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000B000000000001 /* ContentView.swift */; };
 		A10000003A000000000001 /* RecoveryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000C000000000001 /* RecoveryViewModel.swift */; };
 		A10000004A000000000001 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000D000000000001 /* WebView.swift */; };
-		A10000005A000000000001 /* UnforgettableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000E000000000001 /* UnforgettableSDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10000005A000000000001 /* UnforgettableSDK in Frameworks */,
+				56B34A042ED9FB2700B014D2 /* UnforgettableSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,7 +78,7 @@
 			);
 			name = UnforgettableExample;
 			packageProductDependencies = (
-				A10000000E000000000001 /* UnforgettableSDK */,
+				56B34A032ED9FB2700B014D2 /* UnforgettableSDK */,
 			);
 			productName = UnforgettableExample;
 			productReference = A1000000FF000000000001 /* UnforgettableExample.app */;
@@ -109,7 +109,7 @@
 			);
 			mainGroup = A1000000F1000000000001;
 			packageReferences = (
-				A1000000FA000000000001 /* XCLocalSwiftPackageReference "../../packages/ios" */,
+				56B34A022ED9FB2700B014D2 /* XCRemoteSwiftPackageReference "unforgettable-sdk" */,
 			);
 			productRefGroup = A1000000F3000000000001 /* Products */;
 			projectDirPath = "";
@@ -353,17 +353,21 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		A1000000FA000000000001 /* XCLocalSwiftPackageReference "../../packages/ios" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../packages/ios;
+/* Begin XCRemoteSwiftPackageReference section */
+		56B34A022ED9FB2700B014D2 /* XCRemoteSwiftPackageReference "unforgettable-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rarimo/unforgettable-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 0.8.0;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A10000000E000000000001 /* UnforgettableSDK */ = {
+		56B34A032ED9FB2700B014D2 /* UnforgettableSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A1000000FA000000000001 /* XCLocalSwiftPackageReference "../../packages/ios" */;
+			package = 56B34A022ED9FB2700B014D2 /* XCRemoteSwiftPackageReference "unforgettable-sdk" */;
 			productName = UnforgettableSDK;
 		};
 /* End XCSwiftPackageProductDependency section */

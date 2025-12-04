@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 export interface UseUnforgettableLinkOptions extends UnforgettableSdkOptions {
   pollingInterval?: number
   pollingDisabled?: boolean
-  onSuccess?: (privateKey: string, helperDataUrl?: string) => void
+  onSuccess?: (privateKey: string) => void
   onError?: (error: Error) => void
 }
 
@@ -41,10 +41,10 @@ export function useUnforgettableLink({
 
   const processKeyRecovery = useCallback(async () => {
     try {
-      const { recoveryKey, helperDataUrl } = await sdk.getRecoveredData()
+      const { recoveryKey } = await sdk.getRecoveredData()
       setIsFinished(true)
       window.clearInterval(pollingIntervalRef.current)
-      onSuccess?.(recoveryKey, helperDataUrl)
+      onSuccess?.(recoveryKey)
     } catch (error) {
       if (error instanceof NotFoundError) {
         return // Data transfer is not yet available

@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.rarimo.unforgettable-sdk:android:0.8.0")
+    implementation("com.github.rarimo.unforgettable-sdk:android:1.0.0")
 }
 ```
 
@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.rarimo.unforgettable-sdk:android:0.8.0'
+    implementation 'com.github.rarimo.unforgettable-sdk:android:1.0.0'
 }
 ```
 
@@ -45,7 +45,7 @@ dependencies {
 <dependency>
     <groupId>com.github.rarimo.unforgettable-sdk</groupId>
     <artifactId>android</artifactId>
-    <version>0.8.0</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -90,10 +90,6 @@ lifecycleScope.launch {
     try {
         val recoveredData = sdk.getRecoveredData()
         println("Recovery Key: ${recoveredData.recoveryKey}")
-        
-        recoveredData.helperDataUrl?.let { url ->
-            println("Helper Data URL: $url")
-        }
     } catch (e: UnforgettableSDKError) {
         println("Error during recovery: $e")
     }
@@ -145,7 +141,7 @@ Retrieves the recovered data from the API (suspending function).
 suspend fun getRecoveredData(): RecoveredData
 ```
 
-**Returns:** The recovered data including the recovery key and optional helper data URL
+**Returns:** The recovered data including the recovery key
 
 **Throws:** `UnforgettableSDKError` on failure
 

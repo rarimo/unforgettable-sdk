@@ -40,10 +40,9 @@ function App() {
       group="my-app"
       // walletAddress="0x1234567890abcdef" // Required for 'restore' mode
       qrProps={{ size: 300 }}
-      onSuccess={(privateKey, helperDataUrl) => {
+      onSuccess={(privateKey) => {
         console.log('Recovery successful!')
         console.log('Private Key:', privateKey)
-        console.log('Helper Data URL:', helperDataUrl)
       }}
       onError={(error) => {
         console.error('Recovery failed:', error)
@@ -110,7 +109,7 @@ interface UnforgettableQrCodeProps {
   customParams?: Record<string, string>
   pollingInterval?: number // Default: 5000ms
   pollingDisabled?: boolean // Default: false
-  onSuccess?: (privateKey: string, helperDataUrl?: string) => void
+  onSuccess?: (privateKey: string) => void
   onError?: (error: Error) => void
   qrProps?: QRCodeSVGProps
   loader?: React.ReactNode
@@ -150,7 +149,7 @@ interface UseUnforgettableLinkOptions {
   customParams?: Record<string, string>
   pollingInterval?: number
   pollingDisabled?: boolean
-  onSuccess?: (privateKey: string, helperDataUrl?: string) => void
+  onSuccess?: (privateKey: string) => void
   onError?: (error: Error) => void
 }
 ```
@@ -194,7 +193,7 @@ string | null // The recovery URL or null if still generating
   walletAddress="0x1234567890abcdef"
   factors={[RecoveryFactor.Face, RecoveryFactor.Password]}
   pollingInterval={2000}
-  onSuccess={(privateKey, helperDataUrl) => {
+  onSuccess={(privateKey) => {
     // Restore wallet with the private key
     restoreWallet(privateKey)
   }}

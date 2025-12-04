@@ -17,5 +17,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "UnforgettableExample"
 include(":app")
-include(":sdk")
-project(":sdk").projectDir = file("../../packages/android")

@@ -56,17 +56,14 @@ private data class DataTransferAttributes(
 @Serializable
 private data class DataTransferPayload(
     @SerialName("recovery_key")
-    val recoveryKey: String,
-    @SerialName("helper_data_url")
-    val helperDataUrl: String? = null
+    val recoveryKey: String
 )
 
 /**
  * Recovered data from the API
  */
 data class RecoveredData(
-    val recoveryKey: String,
-    val helperDataUrl: String? = null
+    val recoveryKey: String
 )
 
 /**
@@ -170,8 +167,7 @@ public class UnforgettableSDK(options: UnforgettableSdkOptions) {
                         }
                         
                         RecoveredData(
-                            recoveryKey = decryptedKey,
-                            helperDataUrl = payload.helperDataUrl
+                            recoveryKey = decryptedKey
                         )
                     }
                     HttpURLConnection.HTTP_NOT_FOUND -> {

@@ -14,7 +14,6 @@ export interface DataTransfer {
 
 export interface DataTransferPayload {
   recovery_key: string
-  helper_data_url?: string
 }
 
 export interface UnforgettableSdkOptions {
@@ -29,7 +28,6 @@ export interface UnforgettableSdkOptions {
 
 export interface RecoveredData {
   recoveryKey: string
-  helperDataUrl?: string
 }
 
 export class UnforgettableSdk {
@@ -86,11 +84,10 @@ export class UnforgettableSdk {
     if (!data) throw errors.NotFoundError
 
     const keypair = await this.#encryptionKeyPairPromise
-    const { recovery_key, helper_data_url }: DataTransferPayload = JSON.parse(data.data)
+    const { recovery_key }: DataTransferPayload = JSON.parse(data.data)
 
     return {
       recoveryKey: keypair.decrypt(recovery_key),
-      helperDataUrl: helper_data_url,
     }
   }
 

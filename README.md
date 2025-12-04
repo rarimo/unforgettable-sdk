@@ -105,7 +105,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.rarimo.unforgettable-sdk:android:0.8.0")
+    implementation("com.github.rarimo.unforgettable-sdk:android:1.0.0")
 }
 ```
 
@@ -127,7 +127,7 @@ val recoveredKey = sdk.getRecoveredKey() // suspending function
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/rarimo/unforgettable-sdk.git", from: "0.8.0")
+    .package(url: "https://github.com/rarimo/unforgettable-sdk.git", from: "1.0.0")
 ]
 ```
 
@@ -136,7 +136,7 @@ import UnforgettableSDK
 
 let sdk = try UnforgettableSDK(
     mode: .create,
-    factors: [.face, .password]
+    factors: [.face, .image, .password]
 )
 
 let recoveryUrl = try sdk.getRecoveryUrl()
