@@ -46,8 +46,8 @@ final class UnforgettableSDKTests: XCTestCase {
     }
     
     func testRecoveryFactorAllCases() {
-        XCTAssertEqual(RecoveryFactor.allCases.count, 3)
-        XCTAssertEqual(ALL_RECOVERY_FACTORS.count, 3)
+        XCTAssertEqual(RecoveryFactor.allCases.count, 4)
+        XCTAssertEqual(ALL_RECOVERY_FACTORS.count, 4)
     }
     
     func testSDKWithGroup() throws {
@@ -113,6 +113,7 @@ final class UnforgettableSDKTests: XCTestCase {
         XCTAssertEqual(RecoveryFactor(rawValue: 1), .face)
         XCTAssertEqual(RecoveryFactor(rawValue: 2), .image)
         XCTAssertEqual(RecoveryFactor(rawValue: 3), .password)
+        XCTAssertEqual(RecoveryFactor(rawValue: 4), .geolocation)
         XCTAssertNil(RecoveryFactor(rawValue: 99))
     }
 }

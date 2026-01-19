@@ -304,6 +304,7 @@ private fun factorName(factor: RecoveryFactor): String {
         RecoveryFactor.FACE -> "Face"
         RecoveryFactor.IMAGE -> "Image"
         RecoveryFactor.PASSWORD -> "Password"
+        RecoveryFactor.GEOLOCATION -> "Geolocation"
     }
 }
 

@@ -235,7 +235,8 @@ function ManualRecovery() {
 enum RecoveryFactor {
   Face = 1,
   Image = 2,
-  Password = 3
+  Password = 3,
+  Geolocation = 4
 }
 ```
 

@@ -6,7 +6,8 @@ const val UNFORGETTABLE_API_URL = "https://api.unforgettable.app"
 enum class RecoveryFactor(val value: Int) {
     FACE(1),
     IMAGE(2),
-    PASSWORD(3);
+    PASSWORD(3),
+    GEOLOCATION(4);
 
     companion object {
         fun fromValue(value: Int): RecoveryFactor? {

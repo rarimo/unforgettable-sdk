@@ -59,8 +59,8 @@ class UnforgettableSDKTest {
     
     @Test
     fun `test recovery factor all cases`() {
-        assertEquals(3, RecoveryFactor.values().size)
-        assertEquals(3, RecoveryFactor.ALL_RECOVERY_FACTORS.size)
+        assertEquals(4, RecoveryFactor.values().size)
+        assertEquals(4, RecoveryFactor.ALL_RECOVERY_FACTORS.size)
     }
     
     @Test
@@ -68,6 +68,7 @@ class UnforgettableSDKTest {
         assertEquals(RecoveryFactor.FACE, RecoveryFactor.fromValue(1))
         assertEquals(RecoveryFactor.IMAGE, RecoveryFactor.fromValue(2))
         assertEquals(RecoveryFactor.PASSWORD, RecoveryFactor.fromValue(3))
+        assertEquals(RecoveryFactor.GEOLOCATION, RecoveryFactor.fromValue(4))
         assertEquals(null, RecoveryFactor.fromValue(99))
     }
     
