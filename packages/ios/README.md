@@ -70,6 +70,7 @@ public enum RecoveryFactor: Int {
     case face = 1
     case image = 2
     case password = 3
+    case geolocation = 4
 }
 ```
 

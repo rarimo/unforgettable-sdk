@@ -194,6 +194,7 @@ struct ContentView: View {
     case .face: return "Face"
     case .image: return "Image"
     case .password: return "Password"
+    case .geolocation: return "Geolocation"
     }
   }
 }

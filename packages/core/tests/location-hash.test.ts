@@ -10,7 +10,12 @@ describe('url location hash utils', () => {
       const params = {
         dataTransferId: 'test-id',
         encryptionPublicKey: 'test-pk',
-        factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
+        factors: [
+          RecoveryFactor.Face,
+          RecoveryFactor.Image,
+          RecoveryFactor.Password,
+          RecoveryFactor.Geolocation,
+        ],
         walletAddress: '0xabc',
         group: 'm',
         customParams: {
@@ -21,14 +26,21 @@ describe('url location hash utils', () => {
 
       const hash = composeUnforgettableLocationHash(params)
 
-      expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3&wa=0xabc&g=m&t=test-theme&d=test-data')
+      expect(hash).toBe(
+        '#id=test-id&epk=test-pk&f=1%2C2%2C3%2C4&wa=0xabc&g=m&t=test-theme&d=test-data',
+      )
     })
 
     it('it creates a hash which can be parsed into the initial params object', () => {
       const params = {
         dataTransferId: 'test-id',
         encryptionPublicKey: 'test-pk',
-        factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
+        factors: [
+          RecoveryFactor.Face,
+          RecoveryFactor.Image,
+          RecoveryFactor.Password,
+          RecoveryFactor.Geolocation,
+        ],
         walletAddress: '0xabc',
         group: 'm',
         customParams: {
@@ -47,7 +59,12 @@ describe('url location hash utils', () => {
       const params = {
         dataTransferId: 'test-id',
         encryptionPublicKey: 'test-pk',
-        factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
+        factors: [
+          RecoveryFactor.Face,
+          RecoveryFactor.Image,
+          RecoveryFactor.Password,
+          RecoveryFactor.Geolocation,
+        ],
       }
 
       const hash = composeUnforgettableLocationHash(params)
@@ -57,14 +74,19 @@ describe('url location hash utils', () => {
       expect(urlSearchParams.get('epk')).toBe(params.encryptionPublicKey)
       expect(urlSearchParams.get('f')).toBe(params.factors.join(','))
       expect(urlSearchParams.get('wa')).toBeNull()
-      expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3')
+      expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3%2C4')
     })
 
     it('excludes group from hash if not passed', () => {
       const params = {
         dataTransferId: 'test-id',
         encryptionPublicKey: 'test-pk',
-        factors: [RecoveryFactor.Face, RecoveryFactor.Image, RecoveryFactor.Password],
+        factors: [
+          RecoveryFactor.Face,
+          RecoveryFactor.Image,
+          RecoveryFactor.Password,
+          RecoveryFactor.Geolocation,
+        ],
       }
 
       const hash = composeUnforgettableLocationHash(params)
@@ -74,7 +96,7 @@ describe('url location hash utils', () => {
       expect(urlSearchParams.get('epk')).toBe(params.encryptionPublicKey)
       expect(urlSearchParams.get('f')).toBe(params.factors.join(','))
       expect(urlSearchParams.get('g')).toBeNull()
-      expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3')
+      expect(hash).toBe('#id=test-id&epk=test-pk&f=1%2C2%2C3%2C4')
     })
   })
 

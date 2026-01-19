@@ -5,6 +5,7 @@ export enum RecoveryFactor {
   Face = 1,
   Image = 2,
   Password = 3,
+  Geolocation = 4,
 }
 
 export const ALL_RECOVERY_FACTORS: RecoveryFactor[] = Object.values(RecoveryFactor).filter(

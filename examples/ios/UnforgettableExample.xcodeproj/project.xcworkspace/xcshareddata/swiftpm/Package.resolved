@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/rarimo/unforgettable-sdk",
       "state" : {
-        "revision" : "db89669ce8792fe9b57c8724e8f893805f3d4179",
-        "version" : "0.8.0"
+        "revision" : "1751ea125016b1a513cd5ca352ef435d6efac7b5",
+        "version" : "1.0.0"
       }
     }
   ],

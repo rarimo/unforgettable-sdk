@@ -32,6 +32,7 @@ const RECOVERY_FACTORS = [
   { key: RecoveryFactor.Face, label: 'Face' },
   { key: RecoveryFactor.Image, label: 'Image' },
   { key: RecoveryFactor.Password, label: 'Password' },
+  { key: RecoveryFactor.Geolocation, label: 'Geolocation' },
 ]
 
 function App(): React.JSX.Element {
@@ -40,6 +41,7 @@ function App(): React.JSX.Element {
     RecoveryFactor.Face,
     RecoveryFactor.Image,
     RecoveryFactor.Password,
+    RecoveryFactor.Geolocation,
   ])
   const [walletAddress, setWalletAddress] = useState('')
   const [group, setGroup] = useState('')

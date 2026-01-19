@@ -8,6 +8,7 @@ const RECOVERY_FACTORS = [
   { key: RecoveryFactor.Face, label: 'Face' },
   { key: RecoveryFactor.Image, label: 'Image' },
   { key: RecoveryFactor.Password, label: 'Password' },
+  { key: RecoveryFactor.Geolocation, label: 'Geolocation' },
 ]
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
     RecoveryFactor.Face,
     RecoveryFactor.Image,
     RecoveryFactor.Password,
+    RecoveryFactor.Geolocation,
   ])
 
   const [mode, setMode] = useState<UnforgettableMode>('create')
