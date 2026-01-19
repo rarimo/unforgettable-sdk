@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
+### Added
+- `Geolocation` recovery factor.
+
+### Changed
+- Update CI to publish release candidates with `yarn publish:rc` command.
 
 ## [1.0.0] - 2025-12-04
 ### Changed
