@@ -1,10 +1,11 @@
-name: Publish Stable to NPM
+name: Publish to NPM
 
 on:
   push:
     tags:
       - 'v?[0-9]+.[0-9]+.[0-9]+'
       - 'v?[0-9]+.[0-9]+.[0-9]+-[0-9]+'
+      - 'v?[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
 
 jobs:
   publish:
@@ -17,10 +18,30 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.nodejs }}
-      - name: Publish
+      - name: Determine publish type
+        id: publish-type
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          if [[ "$TAG_NAME" =~ -rc\.[0-9]+$ ]]; then
+            echo "type=rc" >> $GITHUB_OUTPUT
+            echo "Publishing release candidate: $TAG_NAME"
+          else
+            echo "type=stable" >> $GITHUB_OUTPUT
+            echo "Publishing stable release: $TAG_NAME"
+          fi
+      - name: Publish Stable
+        if: steps.publish-type.outputs.type == 'stable'
         run: |
           corepack enable
           yarn install
           yarn publish:stable
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Publish RC
+        if: steps.publish-type.outputs.type == 'rc'
+        run: |
+          corepack enable
+          yarn install
+          yarn publish:rc
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
