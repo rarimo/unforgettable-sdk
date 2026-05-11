@@ -84,6 +84,20 @@ export default function App() {
 
         <div className='flex flex-col md:flex-row items-center md:items-start gap-10'>
           <div className='flex-1 space-y-4'>
+            <div>
+              <label className='text-sm font-semibold text-gray-700 block mb-2'>
+                Group (required)
+              </label>
+              <input
+                required
+                type='text'
+                value={group}
+                onChange={e => setGroup(e.target.value)}
+                placeholder='Enter group identifier'
+                className='border border-gray-300 rounded-md p-2 w-full text-sm'
+              />
+            </div>
+
             {mode === 'restore' && (
               <div>
                 <label className='text-sm font-semibold text-gray-700 block mb-2'>
@@ -98,19 +112,6 @@ export default function App() {
                 />
               </div>
             )}
-
-            <div>
-              <label className='text-sm font-semibold text-gray-700 block mb-2'>
-                Group (Optional)
-              </label>
-              <input
-                type='text'
-                value={group}
-                onChange={e => setGroup(e.target.value)}
-                placeholder='Enter group identifier'
-                className='border border-gray-300 rounded-md p-2 w-full text-sm'
-              />
-            </div>
 
             <div className='text-sm text-gray-700 space-y-2'>
               <p>
@@ -149,14 +150,14 @@ export default function App() {
             )}
           </div>
 
-          {!privateKey && (
+          {!privateKey && !!group && (
             <div className='flex flex-col items-center gap-4'>
               <UnforgettableQrCode
                 qrProps={{ size: 200 }}
                 mode={mode}
                 factors={selectedFactors}
                 walletAddress={mode === 'restore' ? walletAddress || undefined : undefined}
-                group={group || undefined}
+                group={group}
                 onSuccess={handleUnforgettableSuccess}
                 onError={error => console.error(error)}
               />
